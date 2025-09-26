@@ -1,0 +1,49 @@
+{
+  "name": "@todesktop/client-recall",
+  "version": "1.1.0",
+  "description": "ToDesktop plugin for Recall.ai Desktop Recording SDK - Client library",
+  "private": false,
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run sync-sdk-types && tsc --outDir dist --declaration && npm run copy-types",
+    "dev": "npm run sync-sdk-types && tsc --outDir dist --declaration --watch",
+    "clean": "rimraf dist",
+    "typecheck": "npm run sync-sdk-types && tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "copy-types": "copyfiles -f src/generated/*.d.ts dist/",
+    "sync-sdk-types": "node scripts/sync-sdk-types.cjs",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish"
+  },
+  "keywords": [
+    "todesktop",
+    "plugin",
+    "client",
+    "web",
+    "recall",
+    "recording",
+    "meetings",
+    "sdk"
+  ],
+  "author": "ToDesktop",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@recallai/desktop-sdk": "1.1.0",
+    "rimraf": "^5.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/node": "20.19.2"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@todesktop/recall-example",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Example webpage using the ToDesktop Recall client SDK",
+  "scripts": {
+    "build": "npm run clean && npm run build:html && npm run build:js",
+    "build:js": "esbuild src/index.ts --bundle --format=esm --sourcemap --outdir=dist",
+    "build:html": "copyfiles -u 1 src/index.html dist/",
+    "dev": "npm run build:html && concurrently -k \"npm:watch:js\" \"npm:watch:html\" \"npm:serve\"",
+    "watch:js": "esbuild src/index.ts --bundle --format=esm --sourcemap --outdir=dist --watch",
+    "watch:html": "chokidar 'src/index.html' -c 'npm run build:html'",
+    "serve": "http-server dist -p 5173 -c-1",
+    "clean": "rimraf dist",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@todesktop/client-recall": "file:../client"
+  },
+  "devDependencies": {
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^8.2.0",
+    "copyfiles": "^2.4.1",
+    "esbuild": "^0.21.0",
+    "http-server": "^14.1.1",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.0.0"
+  }
+}
