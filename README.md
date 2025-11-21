@@ -268,3 +268,8 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```bash
   npm run sync-sdk-types --workspace=@todesktop/client-recall
   ```
+
+  ## Changelog
+
+  - 1.2.0
+    - Updated `@recallai/desktop-sdk` to v1.3.5
