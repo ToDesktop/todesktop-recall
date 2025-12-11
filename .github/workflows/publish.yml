@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
           registry-url: "https://registry.npmjs.org"
@@ -62,8 +62,8 @@ jobs:
           git tag "v${VERSION}"
 
           # Publish client and plugin (OIDC handles auth automatically with npm 11.5.1+)
-          NODE_AUTH_TOKEN="" npm publish --workspace=packages/client --access public
-          NODE_AUTH_TOKEN="" npm publish --workspace=packages/plugin --access public
+          npm publish --workspace=packages/client --access public
+          npm publish --workspace=packages/plugin --access public
 
           # Push changes and tag
           git push
