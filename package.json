@@ -47,5 +47,9 @@
     "google-meet"
   ],
   "author": "ToDesktop",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ToDesktop/todesktop-recall.git"
+  }
 }
