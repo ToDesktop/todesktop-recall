@@ -65,7 +65,7 @@
     "rimraf": "^5.0.0"
   },
   "dependencies": {
-    "@recallai/desktop-sdk": "2.0.0",
+    "@recallai/desktop-sdk": "2.0.3",
     "@types/node": "20.19.2"
   },
   "repository": {
