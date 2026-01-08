@@ -1,6 +1,6 @@
 {
   "name": "@todesktop/plugin-recall",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "ToDesktop plugin for Recall.ai Desktop Recording SDK - Plugin package",
   "private": false,
   "main": "dist/main.js",
