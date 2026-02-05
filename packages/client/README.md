@@ -270,7 +270,6 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```
 
   ## Changelog
-
   - 1.3.2
     - Updated `@recallai/desktop-sdk` to v2.0.4
   - 1.3.1
