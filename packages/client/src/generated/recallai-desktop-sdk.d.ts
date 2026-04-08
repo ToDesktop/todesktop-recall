@@ -33,10 +33,6 @@ export interface RecallAiSdkConfig {
     acquirePermissionsOnStartup?: Permission[];
     restartOnError?: boolean;
     dev?: boolean;
-    testMode?: boolean;
-    testSpeedModifier?: string;
-    testTargetBundleId?: string;
-    testTargetBundleIdRemapped?: string;
 }
 export interface StartRecordingConfig {
     windowId: string;
@@ -139,7 +135,6 @@ export declare function resumeRecording({ windowId }: ResumeRecordingConfig): Pr
 export declare function uploadRecording({ windowId }: UploadRecordingConfig): Promise<null>;
 export declare function prepareDesktopAudioRecording(): Promise<string>;
 export declare function requestPermission(permission: Permission): Promise<null>;
-export declare function testUnexpectedShutdown(): Promise<null>;
 export declare function addEventListener<T extends keyof EventTypeToPayloadMap>(type: T, callback: (event: EventTypeToPayloadMap[T]) => void): void;
 export declare function removeEventListener<T extends keyof EventTypeToPayloadMap>(type: T, callback: (event: EventTypeToPayloadMap[T]) => void): void;
 export declare function removeAllEventListeners(): void;
@@ -156,6 +151,5 @@ declare const RecallAiSdk: {
     addEventListener: typeof addEventListener;
     removeEventListener: typeof removeEventListener;
     removeAllEventListeners: typeof removeAllEventListeners;
-    testUnexpectedShutdown: typeof testUnexpectedShutdown;
 };
 export default RecallAiSdk;
