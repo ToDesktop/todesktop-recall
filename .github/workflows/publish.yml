@@ -56,15 +56,34 @@ jobs:
           npm version "$VERSION" --workspace=packages/client --no-git-tag-version --allow-same-version
           npm version "$VERSION" --workspace=packages/plugin --no-git-tag-version --allow-same-version
 
-          # Commit version changes
-          git add .
-          git commit -m "v${VERSION}"
-          git tag "v${VERSION}"
+          # Commit version changes only when the requested version is not already in git
+          git add package-lock.json packages/client/package.json packages/plugin/package.json
+          if git diff --cached --quiet; then
+            echo "Version ${VERSION} is already committed; skipping version commit."
+            VERSION_COMMITTED=false
+          else
+            git commit -m "v${VERSION}"
+            VERSION_COMMITTED=true
+          fi
+
+          # Create the tag only when it does not already exist on the remote
+          if git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null 2>&1; then
+            echo "Remote tag v${VERSION} already exists; skipping tag creation."
+            TAG_CREATED=false
+          else
+            git tag "v${VERSION}"
+            TAG_CREATED=true
+          fi
 
           # Publish client and plugin (OIDC handles auth automatically with npm 11.5.1+)
           npm publish --workspace=packages/client --access public
           npm publish --workspace=packages/plugin --access public
 
-          # Push changes and tag
-          git push
-          git push --tags
+          # Push changes and tag if we created them in this run
+          if [ "$VERSION_COMMITTED" = true ]; then
+            git push
+          fi
+
+          if [ "$TAG_CREATED" = true ]; then
+            git push origin "v${VERSION}"
+          fi
