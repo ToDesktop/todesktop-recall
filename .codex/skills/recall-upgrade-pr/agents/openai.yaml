@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recall Upgrade PR"
+  short_description: "Upgrade Recall SDK and open a draft PR"
+  default_prompt: "Use $recall-upgrade-pr to upgrade Recall in this repo and open a draft PR."

@@ -76,8 +76,8 @@ describe('RecallDesktopClient (smoke tests)', () => {
     expect(prep.success).toBe(true);
     expect(prep.data?.windowId).toBe('wd-1');
 
-    await client.requestPermission('screen-capture' as PermissionType);
-    expect(calls.requestPermission).toEqual(['screen-capture']);
+    await client.requestPermission('full-disk-access' as PermissionType);
+    expect(calls.requestPermission).toEqual(['full-disk-access']);
 
     await client.setConfig({ apiUrl: 'https://us-east-1.recall.ai' });
     expect(calls.setConfig).toEqual([{ apiUrl: 'https://us-east-1.recall.ai' }]);

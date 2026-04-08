@@ -1,7 +1,10 @@
-export type RecallAiSdkEvent = RecordingStartEvent | RecordingStopEvent | UploadProgressEvent | MeetingDetectedEvent | MeetingUpdatedEvent | MeetingClosedEvent | SdkStateChangeEvent | ErrorEvent | MediaCaptureStatusEvent | ParticipantCaptureStatusEvent | PermissionsGrantedEvent | RealtimeEvent | ShutdownEvent;
+export type RecallAiSdkEvent = RecordingStartEvent | RecordingStopEvent | UploadProgressEvent | MeetingDetectedEvent | MeetingUpdatedEvent | MeetingClosedEvent | SdkStateChangeEvent | ErrorEvent | MediaCaptureStatusEvent | ParticipantCaptureStatusEvent | PermissionsGrantedEvent | RealtimeEvent | ShutdownEvent | LogEvent | NetworkStatusEvent;
 export type EventTypeToPayloadMap = {
     'recording-started': RecordingStartEvent;
     'recording-ended': RecordingStopEvent;
+    /**
+     * @deprecated Recordings are uploaded in parallel to recording now, there is no progress.
+     */
     'upload-progress': UploadProgressEvent;
     'meeting-detected': MeetingDetectedEvent;
     'meeting-updated': MeetingUpdatedEvent;
@@ -14,13 +17,15 @@ export type EventTypeToPayloadMap = {
     'permission-status': PermissionStatusEvent;
     'realtime-event': RealtimeEvent;
     'shutdown': ShutdownEvent;
+    'log': LogEvent;
+    'network-status': NetworkStatusEvent;
 };
-export type Permission = 'accessibility' | 'screen-capture' | 'microphone' | 'system-audio';
+export type Permission = 'accessibility' | 'screen-capture' | 'microphone' | 'system-audio' | 'full-disk-access';
 export interface RecallAiSdkWindow {
     id: string;
     title?: string;
     url?: string;
-    platform: string;
+    platform?: string;
 }
 export interface RecallAiSdkConfig {
     api_url?: string;
@@ -42,6 +47,9 @@ export interface PauseRecordingConfig {
 export interface ResumeRecordingConfig {
     windowId: string;
 }
+/**
+ * @deprecated Recordings are automatically uploaded based on your rentention configuration. This is now a no-op.
+ */
 export interface UploadRecordingConfig {
     windowId: string;
 }
@@ -103,16 +111,33 @@ export interface ShutdownEvent {
     code: number;
     signal: string;
 }
+export interface NetworkStatusEvent {
+    status: 'reconnected' | 'disconnected';
+}
+export interface LogEvent {
+    level: 'debug' | 'info' | 'warning' | 'error';
+    message: string;
+    subsystem: string;
+    category: string;
+    window_id: string;
+}
 export declare function init(options: RecallAiSdkConfig): Promise<null>;
 export declare function shutdown(): Promise<null>;
+export declare function dumpAXTree(procName: string): Promise<any>;
+export declare function dumpAllApplications(): Promise<any>;
 export declare function startRecording(config: StartRecordingConfig): Promise<null>;
 export declare function stopRecording({ windowId }: StopRecordingConfig): Promise<null>;
 export declare function pauseRecording({ windowId }: PauseRecordingConfig): Promise<null>;
 export declare function resumeRecording({ windowId }: ResumeRecordingConfig): Promise<null>;
+/**
+ * @deprecated Recordings are automatically uploaded based on your rentention configuration. This is now a no-op.
+ */
 export declare function uploadRecording({ windowId }: UploadRecordingConfig): Promise<null>;
 export declare function prepareDesktopAudioRecording(): Promise<string>;
 export declare function requestPermission(permission: Permission): Promise<null>;
 export declare function addEventListener<T extends keyof EventTypeToPayloadMap>(type: T, callback: (event: EventTypeToPayloadMap[T]) => void): void;
+export declare function removeEventListener<T extends keyof EventTypeToPayloadMap>(type: T, callback: (event: EventTypeToPayloadMap[T]) => void): void;
+export declare function removeAllEventListeners(): void;
 declare const RecallAiSdk: {
     init: typeof init;
     shutdown: typeof shutdown;
@@ -124,5 +149,7 @@ declare const RecallAiSdk: {
     prepareDesktopAudioRecording: typeof prepareDesktopAudioRecording;
     requestPermission: typeof requestPermission;
     addEventListener: typeof addEventListener;
+    removeEventListener: typeof removeEventListener;
+    removeAllEventListeners: typeof removeAllEventListeners;
 };
 export default RecallAiSdk;

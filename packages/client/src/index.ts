@@ -191,8 +191,9 @@ export class RecallDesktopClient {
   /**
    * Upload a completed recording
    * @param windowId The meeting window ID
-   * @returns Promise resolving to upload start result
+   * @returns Promise resolving to the compatibility no-op result
    * @throws Error if plugin is not available
+   * @deprecated Recall now streams recordings during capture. This method is retained for compatibility.
    */
   async uploadRecording(windowId: string): Promise<ApiResponse> {
     if (!this.api) {
@@ -323,4 +324,6 @@ export type {
   ErrorEvent as SdkErrorEvent,
   RealtimeEvent,
   ShutdownEvent,
+  LogEvent,
+  NetworkStatusEvent,
 } from './generated/recallai-desktop-sdk';

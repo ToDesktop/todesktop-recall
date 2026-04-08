@@ -19,6 +19,7 @@
     "release:patch": "npm run build && npm run release:patch -ws && npm version patch --force",
     "release:minor": "npm run build && npm run release:minor -ws && npm version minor --force",
     "release:major": "npm run build && npm run release:major -ws && npm version major --force",
+    "release:dispatch": "node scripts/dispatch-publish.cjs",
     "sync": "cp ./README.md ./packages/client/README.md && cp ./README.md ./packages/plugin/README.md"
   },
   "devDependencies": {
