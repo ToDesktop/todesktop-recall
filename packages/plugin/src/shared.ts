@@ -74,7 +74,7 @@ export interface MeetingWindow {
   id: string;
   title?: string;
   url?: string;
-  platform: string;
+  platform?: string;
 }
 
 // Recording request/response types
@@ -114,7 +114,9 @@ export type RecallSdkEventType =
   | "permissions-granted"
   | "permission-status"
   | "realtime-event"
-  | "shutdown";
+  | "shutdown"
+  | "log"
+  | "network-status";
 
 export interface RecallSdkEvent {
   type: RecallSdkEventType;
@@ -189,12 +191,25 @@ export interface ShutdownEvent {
   signal: string;
 }
 
+export interface NetworkStatusEvent {
+  status: "reconnected" | "disconnected";
+}
+
+export interface LogEvent {
+  level: "debug" | "info" | "warning" | "error";
+  message: string;
+  subsystem: string;
+  category: string;
+  window_id: string;
+}
+
 // Permission types (mirror upstream)
 export type PermissionType =
   | "accessibility"
   | "screen-capture"
   | "microphone"
-  | "system-audio";
+  | "system-audio"
+  | "full-disk-access";
 
 // API Response types
 export interface ApiResponse<T = any> {
@@ -215,6 +230,7 @@ export interface PluginStatus {
     screenCapture: boolean;
     microphone: boolean;
     systemAudio: boolean;
+    fullDiskAccess: boolean;
   };
 }
 

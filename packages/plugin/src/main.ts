@@ -30,7 +30,7 @@ import { recallSdkStore, setPluginContext } from "./store";
 import RecallAiSdk from "@recallai/desktop-sdk";
 
 class RecallDesktopMain {
-  private version = "1.0.0";
+  private version = "1.3.4";
   private isInitialized = false;
   private subscriptions: Map<RecallSdkEventType, Map<number, number>> =
     new Map();
@@ -353,7 +353,7 @@ class RecallDesktopMain {
           });
           return {
             success: true,
-            message: "Recording upload started successfully",
+            message: "Upload request accepted. Recall now streams recordings during capture, so this call is retained for compatibility only.",
           };
         } catch (error) {
           console.error("RecallDesktopMain: Upload recording failed:", error);

@@ -92,9 +92,6 @@ const stopRecordingListener = recallDesktop.addEventListener(
   "recording-ended",
   async ({ window }) => {
     console.log("Recording ended for window:", window.id);
-
-    // Upload the recording
-    await recallDesktop.uploadRecording(window.id);
   }
 );
 
@@ -120,7 +117,6 @@ await recallDesktop.startRecording(windowId, uploadToken);
 
 // Stop when done
 await recallDesktop.stopRecording(windowId);
-await recallDesktop.uploadRecording(windowId);
 ```
 
 ### Permission Management
@@ -231,7 +227,7 @@ app.post("/webhooks/recall", (req, res) => {
 - `stopRecording(windowId)` - Stop recording
 - `pauseRecording(windowId)` - Pause recording
 - `resumeRecording(windowId)` - Resume recording
-- `uploadRecording(windowId)` - Upload completed recording
+- `uploadRecording(windowId)` - Compatibility no-op; recordings now stream during capture
 - `prepareDesktopAudioRecording()` - Prepare desktop audio capture
 
 ### Event Listeners
@@ -240,9 +236,10 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
 
 - `meeting-detected`, `meeting-updated`, `meeting-closed`
 - `recording-started`, `recording-ended`, `sdk-state-change`
-- `upload-progress`, `realtime-event`, `error`
+- `upload-progress` (deprecated), `realtime-event`, `error`
 - `permissions-granted`, `permission-status`
 - `media-capture-status`, `participant-capture-status`, `shutdown`
+- `log`, `network-status`
 
 ### Configuration
 
@@ -270,6 +267,10 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```
 
   ## Changelog
+  - 1.3.4
+    - Updated `@recallai/desktop-sdk` to v2.0.10
+    - Aligned wrapper types with new Recall events and permissions
+    - Documented the streamed upload model and deprecated `uploadRecording`
   - 1.3.3
     - Updated `@recallai/desktop-sdk` to v2.0.8
   - 1.3.2

@@ -1,6 +1,6 @@
 {
   "name": "@todesktop/client-recall",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "ToDesktop plugin for Recall.ai Desktop Recording SDK - Client library",
   "private": false,
   "main": "dist/index.js",
@@ -37,7 +37,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@recallai/desktop-sdk": "2.0.8",
+    "@recallai/desktop-sdk": "2.0.10",
     "rimraf": "^5.0.0"
   },
   "peerDependencies": {
