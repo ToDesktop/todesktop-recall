@@ -267,6 +267,9 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```
 
   ## Changelog
+  - 1.3.5
+    - Updated `@recallai/desktop-sdk` to v2.0.11
+    - Pulled in upstream meeting-detection, mic-stream, and audio-pipeline reliability fixes
   - 1.3.4
     - Updated `@recallai/desktop-sdk` to v2.0.10
     - Aligned wrapper types with new Recall events and permissions
