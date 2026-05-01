@@ -235,7 +235,7 @@ app.post("/webhooks/recall", (req, res) => {
 Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Available event types include:
 
 - `meeting-detected`, `meeting-updated`, `meeting-closed`
-- `recording-started`, `recording-ended`, `sdk-state-change`
+- `recording-started`, `recording-ended`, `sdk-state-change` (deprecated)
 - `upload-progress` (deprecated), `realtime-event`, `error`
 - `permissions-granted`, `permission-status`
 - `media-capture-status`, `participant-capture-status`, `shutdown`
@@ -267,6 +267,10 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```
 
   ## Changelog
+  - 1.3.6
+    - Updated `@recallai/desktop-sdk` to v2.0.12
+    - Pulled in upstream crash fixes, TLS handling fixes, audio-pipeline telemetry, Teams/Chromium/Safari capture fixes, Zoom multiwindow sharing, and Chrome vertical-tab meeting detection
+    - Reflected upstream deprecation of `sdk-state-change`; use `recording-started` and `recording-ended` for recording state transitions
   - 1.3.5
     - Updated `@recallai/desktop-sdk` to v2.0.11
     - Pulled in upstream meeting-detection, mic-stream, and audio-pipeline reliability fixes

@@ -161,7 +161,7 @@ export function addEventListener(eventType: RecallSdkEventType, callback: (data:
  * @returns Plugin version string
  */
 export function getVersion(): string {
-  return '1.3.4';
+  return '1.3.6';
 }
 
 /**
@@ -177,6 +177,7 @@ export function onMeetingDetected(callback: (meetingData: any) => void): () => v
  * Convenience method for handling recording state changes
  * @param callback Function to call when recording state changes
  * @returns Function to unsubscribe from the event
+ * @deprecated Use recording-started and recording-ended events instead.
  */
 export function onRecordingStateChange(callback: (stateData: any) => void): () => void {
   return addEventListener('sdk-state-change', callback);
