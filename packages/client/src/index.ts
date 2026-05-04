@@ -45,6 +45,7 @@ export interface PluginStatus {
     screenCapture: boolean;
     microphone: boolean;
     systemAudio: boolean;
+    fullDiskAccess: boolean;
   };
 }
 

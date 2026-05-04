@@ -119,6 +119,7 @@ export declare function onMeetingDetected(callback: (meetingData: any) => void):
  * Convenience method for handling recording state changes
  * @param callback Function to call when recording state changes
  * @returns Function to unsubscribe from the event
+ * @deprecated Use recording-started and recording-ended events instead.
  */
 export declare function onRecordingStateChange(callback: (stateData: any) => void): () => void;
 /**

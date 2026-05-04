@@ -128,6 +128,9 @@ export interface MeetingDetectedEvent {
   window: MeetingWindow;
 }
 
+/**
+ * @deprecated Use recording-started and recording-ended events instead.
+ */
 export interface SdkStateChangeEvent {
   sdk: {
     state: {

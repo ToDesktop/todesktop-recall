@@ -9,6 +9,9 @@ export type EventTypeToPayloadMap = {
     'meeting-detected': MeetingDetectedEvent;
     'meeting-updated': MeetingUpdatedEvent;
     'meeting-closed': MeetingClosedEvent;
+    /**
+     * @deprecated Use recording-started/recording-ended instead.
+     */
     'sdk-state-change': SdkStateChangeEvent;
     'error': ErrorEvent;
     'media-capture-status': MediaCaptureStatusEvent;
@@ -74,6 +77,9 @@ export interface MeetingUpdatedEvent {
 export interface MeetingClosedEvent {
     window: RecallAiSdkWindow;
 }
+/**
+ * @deprecated Use recording-started/recording-ended instead.
+ */
 export interface SdkStateChangeEvent {
     sdk: {
         state: {
