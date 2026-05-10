@@ -267,6 +267,9 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```
 
   ## Changelog
+  - 1.3.7
+    - Updated `@recallai/desktop-sdk` to v2.0.13
+    - Pulled in upstream app-hang fixes, performance improvements, Google Meet PIP black-recording fixes, Arc window capture support, audio-pipeline fixes, and Google Meet detection fixes
   - 1.3.6
     - Updated `@recallai/desktop-sdk` to v2.0.12
     - Pulled in upstream crash fixes, TLS handling fixes, audio-pipeline telemetry, Teams/Chromium/Safari capture fixes, Zoom multiwindow sharing, and Chrome vertical-tab meeting detection
