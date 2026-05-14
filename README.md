@@ -267,6 +267,9 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```
 
   ## Changelog
+  - 1.3.8
+    - Updated `@recallai/desktop-sdk` to v2.0.14
+    - Pulled in upstream Google Meet detection fixes, macOS memory leak fixes, audio-pipeline fixes, Teams Gallery fallback capture fixes, and Teams Windows app-hang fixes
   - 1.3.7
     - Updated `@recallai/desktop-sdk` to v2.0.13
     - Pulled in upstream app-hang fixes, performance improvements, Google Meet PIP black-recording fixes, Arc window capture support, audio-pipeline fixes, and Google Meet detection fixes
