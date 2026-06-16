@@ -26,6 +26,9 @@ export interface PluginStatus {
 		fullDiskAccess: boolean;
 	};
 }
+export interface PrepareDesktopAudioRecordingConfig {
+	[key: string]: any;
+}
 export interface PrepareDesktopAudioResponse {
 	windowId: string;
 }
@@ -77,9 +80,10 @@ export declare function resumeRecording(windowId: string): Promise<ApiResponse>;
 export declare function uploadRecording(windowId: string): Promise<ApiResponse>;
 /**
  * Prepare desktop audio recording for non-meeting audio capture
+ * @param config Optional SDK desktop audio preparation config
  * @returns Promise resolving to desktop audio preparation result
  */
-export declare function prepareDesktopAudioRecording(): Promise<ApiResponse<PrepareDesktopAudioResponse>>;
+export declare function prepareDesktopAudioRecording(config?: PrepareDesktopAudioRecordingConfig): Promise<ApiResponse<PrepareDesktopAudioResponse>>;
 /**
  * Request a specific permission from the user
  * @param permission The permission to request

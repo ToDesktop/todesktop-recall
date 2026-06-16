@@ -64,6 +64,10 @@ export type RecallSdkEventType = keyof EventTypeToPayloadMap;
 
 export type RecallSdkEventPayload<T extends RecallSdkEventType> = EventTypeToPayloadMap[T];
 
+export interface PrepareDesktopAudioRecordingConfig {
+  [key: string]: any;
+}
+
 /**
  * Event handler function type
  */
@@ -205,14 +209,17 @@ export class RecallDesktopClient {
 
   /**
    * Prepare desktop audio recording for non-meeting audio capture
+   * @param config Optional SDK desktop audio preparation config
    * @returns Promise resolving to desktop audio preparation result with windowId
    * @throws Error if plugin is not available
    */
-  async prepareDesktopAudioRecording(): Promise<ApiResponse<{ windowId: string }>> {
+  async prepareDesktopAudioRecording(
+    config?: PrepareDesktopAudioRecordingConfig
+  ): Promise<ApiResponse<{ windowId: string }>> {
     if (!this.api) {
       throw new Error('Recall Desktop SDK plugin is not available. Make sure you are running in ToDesktop.');
     }
-    return this.api.prepareDesktopAudioRecording();
+    return this.api.prepareDesktopAudioRecording(config);
   }
 
   /**

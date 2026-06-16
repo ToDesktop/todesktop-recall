@@ -19,6 +19,7 @@ import {
   UploadRecordingRequest,
   PermissionType,
   RecallSdkConfig,
+  PrepareDesktopAudioRecordingConfig,
   PrepareDesktopAudioResponse,
   RecallSdkEventType
 } from './shared';
@@ -100,10 +101,13 @@ export async function uploadRecording(windowId: string): Promise<ApiResponse> {
 
 /**
  * Prepare desktop audio recording for non-meeting audio capture
+ * @param config Optional SDK desktop audio preparation config
  * @returns Promise resolving to desktop audio preparation result
  */
-export async function prepareDesktopAudioRecording(): Promise<ApiResponse<PrepareDesktopAudioResponse>> {
-  return ipcRenderer.invoke(IPC_CHANNELS.PREPARE_DESKTOP_AUDIO);
+export async function prepareDesktopAudioRecording(
+  config?: PrepareDesktopAudioRecordingConfig
+): Promise<ApiResponse<PrepareDesktopAudioResponse>> {
+  return ipcRenderer.invoke(IPC_CHANNELS.PREPARE_DESKTOP_AUDIO, config);
 }
 
 /**
@@ -161,7 +165,7 @@ export function addEventListener(eventType: RecallSdkEventType, callback: (data:
  * @returns Plugin version string
  */
 export function getVersion(): string {
-  return '1.3.8';
+  return '1.3.9';
 }
 
 /**

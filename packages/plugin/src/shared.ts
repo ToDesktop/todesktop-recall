@@ -253,6 +253,10 @@ export interface SdkInitOptions {
 }
 
 // Desktop audio recording response
+export interface PrepareDesktopAudioRecordingConfig {
+  [key: string]: any;
+}
+
 export interface PrepareDesktopAudioResponse {
   windowId: string;
 }

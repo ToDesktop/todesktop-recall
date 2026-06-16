@@ -72,9 +72,10 @@ describe('RecallDesktopClient (smoke tests)', () => {
     await client.uploadRecording('win-1');
     expect(calls.uploadRecording).toEqual(['win-1']);
 
-    const prep = await client.prepareDesktopAudioRecording();
+    const prep = await client.prepareDesktopAudioRecording({ source: 'system' });
     expect(prep.success).toBe(true);
     expect(prep.data?.windowId).toBe('wd-1');
+    expect(mockApi.prepareDesktopAudioRecording).toHaveBeenCalledWith({ source: 'system' });
 
     await client.requestPermission('full-disk-access' as PermissionType);
     expect(calls.requestPermission).toEqual(['full-disk-access']);
