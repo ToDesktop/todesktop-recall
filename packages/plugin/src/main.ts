@@ -21,6 +21,7 @@ import {
   UploadRecordingRequest,
   PermissionType,
   SdkInitOptions,
+  PrepareDesktopAudioRecordingConfig,
   PrepareDesktopAudioResponse,
   RecallSdkConfig,
   RecallSdkEventType,
@@ -30,7 +31,7 @@ import { recallSdkStore, setPluginContext } from "./store";
 import RecallAiSdk from "@recallai/desktop-sdk";
 
 class RecallDesktopMain {
-  private version = "1.3.8";
+  private version = "1.3.9";
   private isInitialized = false;
   private subscriptions: Map<RecallSdkEventType, Map<number, number>> =
     new Map();
@@ -365,11 +366,14 @@ class RecallDesktopMain {
     // Prepare desktop audio recording
     ipcMain.handle(
       IPC_CHANNELS.PREPARE_DESKTOP_AUDIO,
-      async (): Promise<ApiResponse<PrepareDesktopAudioResponse>> => {
+      async (
+        _event,
+        config?: PrepareDesktopAudioRecordingConfig
+      ): Promise<ApiResponse<PrepareDesktopAudioResponse>> => {
         try {
           const windowId = await (
             RecallAiSdk.prepareDesktopAudioRecording as any
-          )();
+          )(config);
           return {
             success: true,
             message: "Desktop audio recording prepared successfully",

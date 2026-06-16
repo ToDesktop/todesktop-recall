@@ -34,8 +34,7 @@ export interface RecallAiSdkConfig {
     api_url?: string;
     apiUrl?: string;
     acquirePermissionsOnStartup?: Permission[];
-    restartOnError?: boolean;
-    dev?: boolean;
+    [key: string]: any;
 }
 export interface StartRecordingConfig {
     windowId: string;
@@ -55,6 +54,9 @@ export interface ResumeRecordingConfig {
  */
 export interface UploadRecordingConfig {
     windowId: string;
+}
+interface PrepareDesktopAudioRecordingConfig {
+    [key: string]: any;
 }
 export interface RecordingStartEvent {
     window: RecallAiSdkWindow;
@@ -139,7 +141,7 @@ export declare function resumeRecording({ windowId }: ResumeRecordingConfig): Pr
  * @deprecated Recordings are automatically uploaded based on your rentention configuration. This is now a no-op.
  */
 export declare function uploadRecording({ windowId }: UploadRecordingConfig): Promise<null>;
-export declare function prepareDesktopAudioRecording(): Promise<string>;
+export declare function prepareDesktopAudioRecording(config?: PrepareDesktopAudioRecordingConfig): Promise<string>;
 export declare function requestPermission(permission: Permission): Promise<null>;
 export declare function addEventListener<T extends keyof EventTypeToPayloadMap>(type: T, callback: (event: EventTypeToPayloadMap[T]) => void): void;
 export declare function removeEventListener<T extends keyof EventTypeToPayloadMap>(type: T, callback: (event: EventTypeToPayloadMap[T]) => void): void;
