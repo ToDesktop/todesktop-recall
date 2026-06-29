@@ -1,4 +1,4 @@
-export type RecallAiSdkEvent = RecordingStartEvent | RecordingStopEvent | UploadProgressEvent | MeetingDetectedEvent | MeetingUpdatedEvent | MeetingClosedEvent | SdkStateChangeEvent | ErrorEvent | MediaCaptureStatusEvent | ParticipantCaptureStatusEvent | PermissionsGrantedEvent | RealtimeEvent | ShutdownEvent | LogEvent | NetworkStatusEvent;
+export type RecallAiSdkEvent = RecordingStartEvent | RecordingStopEvent | UploadProgressEvent | MeetingDetectedEvent | MeetingUpdatedEvent | MeetingClosedEvent | SdkStateChangeEvent | ErrorEvent | MediaCaptureStatusEvent | ParticipantCaptureStatusEvent | ComplianceMessageStatusEvent | PermissionsGrantedEvent | RealtimeEvent | ShutdownEvent | LogEvent | NetworkStatusEvent;
 export type EventTypeToPayloadMap = {
     'recording-started': RecordingStartEvent;
     'recording-ended': RecordingStopEvent;
@@ -16,6 +16,7 @@ export type EventTypeToPayloadMap = {
     'error': ErrorEvent;
     'media-capture-status': MediaCaptureStatusEvent;
     'participant-capture-status': ParticipantCaptureStatusEvent;
+    'compliance-message-status': ComplianceMessageStatusEvent;
     'permissions-granted': PermissionsGrantedEvent;
     'permission-status': PermissionStatusEvent;
     'realtime-event': RealtimeEvent;
@@ -98,6 +99,10 @@ export interface ParticipantCaptureStatusEvent {
     window: RecallAiSdkWindow;
     type: 'video' | 'audio' | 'screenshare';
     capturing: boolean;
+}
+export interface ComplianceMessageStatusEvent {
+    window: RecallAiSdkWindow;
+    status: 'sent' | 'timeout' | 'cancelled';
 }
 export interface PermissionsGrantedEvent {
 }

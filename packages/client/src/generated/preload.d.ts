@@ -5,7 +5,7 @@ export interface RecallSdkConfig {
 	apiUrl: string;
 	requestPermissionsOnStartup: boolean;
 }
-export type RecallSdkEventType = "recording-started" | "recording-ended" | "upload-progress" | "meeting-detected" | "meeting-updated" | "meeting-closed" | "sdk-state-change" | "error" | "media-capture-status" | "participant-capture-status" | "permissions-granted" | "permission-status" | "realtime-event" | "shutdown" | "log" | "network-status";
+export type RecallSdkEventType = "recording-started" | "recording-ended" | "upload-progress" | "meeting-detected" | "meeting-updated" | "meeting-closed" | "sdk-state-change" | "error" | "media-capture-status" | "participant-capture-status" | "compliance-message-status" | "permissions-granted" | "permission-status" | "realtime-event" | "shutdown" | "log" | "network-status";
 export type PermissionType = "accessibility" | "screen-capture" | "microphone" | "system-audio" | "full-disk-access";
 export interface ApiResponse<T = any> {
 	success: boolean;

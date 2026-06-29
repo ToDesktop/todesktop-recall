@@ -111,6 +111,7 @@ export type RecallSdkEventType =
   | "error"
   | "media-capture-status"
   | "participant-capture-status"
+  | "compliance-message-status"
   | "permissions-granted"
   | "permission-status"
   | "realtime-event"
@@ -170,6 +171,11 @@ export interface ParticipantCaptureStatusEvent {
   window: MeetingWindow;
   type: "video" | "audio" | "screenshare";
   capturing: boolean;
+}
+
+export interface ComplianceMessageStatusEvent {
+  window: MeetingWindow;
+  status: "sent" | "timeout" | "cancelled";
 }
 
 export interface RealtimeEvent {
