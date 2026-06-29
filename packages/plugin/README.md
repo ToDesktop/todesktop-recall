@@ -238,7 +238,7 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
 - `recording-started`, `recording-ended`, `sdk-state-change` (deprecated)
 - `upload-progress` (deprecated), `realtime-event`, `error`
 - `permissions-granted`, `permission-status`
-- `media-capture-status`, `participant-capture-status`, `shutdown`
+- `media-capture-status`, `participant-capture-status`, `compliance-message-status`, `shutdown`
 - `log`, `network-status`
 
 ### Configuration
@@ -267,6 +267,10 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```
 
   ## Changelog
+  - 1.3.10
+    - Updated `@recallai/desktop-sdk` to v2.0.22
+    - Pulled in upstream Teams Web support on macOS, transcript partial-data fixes, capture reliability and performance improvements, and compliance messaging fixes
+    - Added pass-through typing for the new `compliance-message-status` SDK event
   - 1.3.9
     - Updated `@recallai/desktop-sdk` to v2.0.19
     - Pulled in upstream Google Meet, Zoom, and Teams detection fixes, video/audio capture reliability fixes, encoding performance improvements, and presigned URL retry handling

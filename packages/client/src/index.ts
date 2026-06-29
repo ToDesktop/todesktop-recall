@@ -327,6 +327,7 @@ export type {
   SdkStateChangeEvent,
   MediaCaptureStatusEvent,
   ParticipantCaptureStatusEvent,
+  ComplianceMessageStatusEvent,
   PermissionsGrantedEvent,
   PermissionStatusEvent,
   ErrorEvent as SdkErrorEvent,
