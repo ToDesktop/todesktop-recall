@@ -267,6 +267,9 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```
 
   ## Changelog
+  - 1.3.11
+    - Updated `@recallai/desktop-sdk` to v2.0.24
+    - Pulled in upstream realtime transcription latency, Teams Web screenshare, Zoom/Google Meet PIP capture, encoding, heartbeat, status request, participant labeling, and desktop audio recording permission fixes
   - 1.3.10
     - Updated `@recallai/desktop-sdk` to v2.0.22
     - Pulled in upstream Teams Web support on macOS, transcript partial-data fixes, capture reliability and performance improvements, and compliance messaging fixes
