@@ -141,6 +141,8 @@ const removePermissionListener = recallDesktop.addEventListener(
 removePermissionListener();
 ```
 
+You can also request `teams-automation` and `browser-automation` through `requestPermission()`. These permissions cannot be requested through the SDK's `acquirePermissionsOnStartup` option and are not included in the plugin's startup permission requests.
+
 ## Backend Integration
 
 ### Demo Backend Service
@@ -267,6 +269,11 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```
 
   ## Changelog
+  - 1.3.13
+    - Updated `@recallai/desktop-sdk` to v2.0.31
+    - Pulled in upstream Zoom Web and webinar support on macOS, Japanese Zoom detection on Windows, Google Meet compliance messaging on Safari, and meeting detection, capture, memory, crash, and network reliability fixes
+    - Added permission typing for `teams-automation` and `browser-automation`, excluding both from SDK startup permission options
+    - Aligned the versions reported by the main process and preload with the package version
   - 1.3.12
     - Updated `@recallai/desktop-sdk` to v2.0.26
     - Pulled in upstream microphone tracking, meeting detection, recording finalization, and Zoom, Google Meet, Teams, and Safari capture fixes

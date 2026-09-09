@@ -24,7 +24,7 @@ export type EventTypeToPayloadMap = {
     'log': LogEvent;
     'network-status': NetworkStatusEvent;
 };
-export type Permission = 'accessibility' | 'screen-capture' | 'microphone' | 'system-audio' | 'full-disk-access';
+export type Permission = 'accessibility' | 'screen-capture' | 'microphone' | 'system-audio' | 'full-disk-access' | 'teams-automation' | 'browser-automation';
 export interface RecallAiSdkWindow {
     id: string;
     title?: string;
@@ -34,7 +34,7 @@ export interface RecallAiSdkWindow {
 export interface RecallAiSdkConfig {
     api_url?: string;
     apiUrl?: string;
-    acquirePermissionsOnStartup?: Permission[];
+    acquirePermissionsOnStartup?: Exclude<Permission, 'teams-automation' | 'browser-automation'>[];
     [key: string]: any;
 }
 export interface StartRecordingConfig {
