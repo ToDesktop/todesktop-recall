@@ -218,7 +218,9 @@ export type PermissionType =
   | "screen-capture"
   | "microphone"
   | "system-audio"
-  | "full-disk-access";
+  | "full-disk-access"
+  | "teams-automation"
+  | "browser-automation";
 
 // API Response types
 export interface ApiResponse<T = any> {
@@ -254,7 +256,10 @@ export class RecallSdkError extends Error {
 // SDK Initialization options
 export interface SdkInitOptions {
   apiUrl: string;
-  acquirePermissionsOnStartup?: PermissionType[];
+  acquirePermissionsOnStartup?: Exclude<
+    PermissionType,
+    "teams-automation" | "browser-automation"
+  >[];
   restartOnError?: boolean;
 }
 

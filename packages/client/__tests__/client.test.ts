@@ -80,6 +80,12 @@ describe('RecallDesktopClient (smoke tests)', () => {
     await client.requestPermission('full-disk-access' as PermissionType);
     expect(calls.requestPermission).toEqual(['full-disk-access']);
 
+    await client.requestPermission('teams-automation');
+    expect(calls.requestPermission).toEqual(['teams-automation']);
+
+    await client.requestPermission('browser-automation');
+    expect(calls.requestPermission).toEqual(['browser-automation']);
+
     await client.setConfig({ apiUrl: 'https://us-east-1.recall.ai' });
     expect(calls.setConfig).toEqual([{ apiUrl: 'https://us-east-1.recall.ai' }]);
 
