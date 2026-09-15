@@ -269,6 +269,9 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```
 
   ## Changelog
+  - 1.3.14
+    - Updated `@recallai/desktop-sdk` to v2.0.32
+    - Pulled in upstream Chromium meeting detection without Full Disk Access on macOS 27, Google Meet and Zoom detection and meeting metadata fixes, and recording-start and transcription finalization reliability improvements
   - 1.3.13
     - Updated `@recallai/desktop-sdk` to v2.0.31
     - Pulled in upstream Zoom Web and webinar support on macOS, Japanese Zoom detection on Windows, Google Meet compliance messaging on Safari, and meeting detection, capture, memory, crash, and network reliability fixes

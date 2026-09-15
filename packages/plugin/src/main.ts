@@ -31,7 +31,7 @@ import { recallSdkStore, setPluginContext } from "./store";
 import RecallAiSdk from "@recallai/desktop-sdk";
 
 class RecallDesktopMain {
-  private version = "1.3.13";
+  private version = "1.3.14";
   private isInitialized = false;
   private subscriptions: Map<RecallSdkEventType, Map<number, number>> =
     new Map();
