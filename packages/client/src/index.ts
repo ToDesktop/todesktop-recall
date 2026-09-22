@@ -6,17 +6,36 @@
  */
 
 // Import generated types from the plugin preload script
-import type { RecallDesktopApi } from './generated/preload';
+import type {
+  RecallDesktopApi,
+  RecallDesktopCapabilities,
+  StartRecordingOptions,
+  SendChatMessageConfig,
+  AudioDevice,
+  AudioDeviceDirection,
+} from './generated/preload';
+export type {
+  RecallDesktopCapabilities,
+  StartRecordingOptions,
+  SendChatMessageConfig,
+  AudioDevice,
+  AudioDeviceDirection,
+} from './generated/preload';
 import type {
   EventTypeToPayloadMap,
   Permission as RecallPermission,
   RecallAiSdkWindow,
 } from './generated/recallai-desktop-sdk';
 
+// A web client can update before the installed desktop app does.
+type NewApiMethod = 'getCapabilities' | 'sendChatMessage' | 'listDevices' | 'setDesktopAudioDevice';
+type CompatibleRecallDesktopApi = Omit<RecallDesktopApi, NewApiMethod> &
+  Partial<Pick<RecallDesktopApi, NewApiMethod>>;
+
 // Extend window interface for ToDesktop runtime
 declare global {
   interface Window {
-    todesktop?: { recallDesktop?: RecallDesktopApi };
+    todesktop?: { recallDesktop?: CompatibleRecallDesktopApi };
   }
 }
 
@@ -78,7 +97,7 @@ export type EventHandler<T = unknown> = (data: T) => void;
  * Provides a safe wrapper around the window.todesktop.recallDesktop API
  */
 export class RecallDesktopClient {
-  private api: RecallDesktopApi | null = null;
+  private api: CompatibleRecallDesktopApi | null = null;
   private eventUnsubscribers = new Map<string, () => void>();
 
   constructor() {
@@ -88,7 +107,7 @@ export class RecallDesktopClient {
       (window as any).todesktop &&
       (window as any).todesktop.recallDesktop
     ) {
-      this.api = (window as any).todesktop.recallDesktop as RecallDesktopApi;
+      this.api = (window as any).todesktop.recallDesktop as CompatibleRecallDesktopApi;
     }
   }
 
@@ -98,6 +117,29 @@ export class RecallDesktopClient {
    */
   isAvailable(): boolean {
     return this.api !== null;
+  }
+
+  /**
+   * Get bridge capabilities, independently of platform, permissions, or SDK state
+   * @returns Unsupported flags are false for older desktop apps
+   */
+  getCapabilities(): RecallDesktopCapabilities {
+    const capabilities = typeof this.api?.getCapabilities === 'function'
+      ? this.api.getCapabilities()
+      : undefined;
+    return {
+      disableRawMedia: capabilities?.disableRawMedia === true,
+      sendChatMessage: typeof this.api?.sendChatMessage === 'function',
+      listDevices: typeof this.api?.listDevices === 'function',
+      setDesktopAudioDevice: typeof this.api?.setDesktopAudioDevice === 'function',
+    };
+  }
+
+  private unsupportedFeature(feature: string): ApiResponse<never> {
+    return {
+      success: false,
+      message: `${feature} is not supported by this desktop app. Update the ToDesktop Recall plugin.`,
+    };
   }
 
   /**
@@ -144,14 +186,40 @@ export class RecallDesktopClient {
    * Start recording a meeting
    * @param windowId The meeting window ID
    * @param uploadToken Upload token from your backend
+   * @param options Optional per-recording capture settings; requires an updated plugin
    * @returns Promise resolving to recording start result
    * @throws Error if plugin is not available
    */
-  async startRecording(windowId: string, uploadToken: string): Promise<ApiResponse> {
+  async startRecording(
+    windowId: string,
+    uploadToken: string,
+    options?: StartRecordingOptions
+  ): Promise<ApiResponse> {
     if (!this.api) {
       throw new Error('Recall Desktop SDK plugin is not available. Make sure you are running in ToDesktop.');
     }
-    return this.api.startRecording(windowId, uploadToken);
+    if (options?.disableRawMedia === undefined) {
+      return this.api.startRecording(windowId, uploadToken);
+    }
+    if (!this.getCapabilities().disableRawMedia) {
+      return this.unsupportedFeature('disableRawMedia');
+    }
+    return this.api.startRecording(windowId, uploadToken, options);
+  }
+
+  /**
+   * Send a chat message during a supported macOS Raw Media recording
+   * @param config Recording ID, message, and optional recipient and pin settings
+   * @returns Promise resolving when the SDK accepts the message, not delivery confirmation
+   */
+  async sendChatMessage(config: SendChatMessageConfig): Promise<ApiResponse> {
+    if (!this.api) {
+      throw new Error('Recall Desktop SDK plugin is not available. Make sure you are running in ToDesktop.');
+    }
+    if (typeof this.api.sendChatMessage !== 'function') {
+      return this.unsupportedFeature('sendChatMessage');
+    }
+    return this.api.sendChatMessage(config);
   }
 
   /**
@@ -220,6 +288,36 @@ export class RecallDesktopClient {
       throw new Error('Recall Desktop SDK plugin is not available. Make sure you are running in ToDesktop.');
     }
     return this.api.prepareDesktopAudioRecording(config);
+  }
+
+  /**
+   * List Windows input and output devices for desktop audio recordings
+   * @returns Promise resolving to the available devices; unsupported on macOS
+   */
+  async listDevices(): Promise<ApiResponse<AudioDevice[]>> {
+    if (!this.api) {
+      throw new Error('Recall Desktop SDK plugin is not available. Make sure you are running in ToDesktop.');
+    }
+    if (typeof this.api.listDevices !== 'function') {
+      return this.unsupportedFeature('listDevices');
+    }
+    return this.api.listDevices();
+  }
+
+  /**
+   * Select a Windows device for desktop audio recordings, not detected meetings
+   * @param id Device ID, or null to restore automatic selection
+   * @param direction Input or output endpoint
+   * @returns Promise resolving to the selection result; unsupported on macOS
+   */
+  async setDesktopAudioDevice(id: string | null, direction: AudioDeviceDirection): Promise<ApiResponse> {
+    if (!this.api) {
+      throw new Error('Recall Desktop SDK plugin is not available. Make sure you are running in ToDesktop.');
+    }
+    if (typeof this.api.setDesktopAudioDevice !== 'function') {
+      return this.unsupportedFeature('setDesktopAudioDevice');
+    }
+    return this.api.setDesktopAudioDevice(id, direction);
   }
 
   /**
@@ -335,4 +433,5 @@ export type {
   ShutdownEvent,
   LogEvent,
   NetworkStatusEvent,
+  ZoomComputerAudioEvent,
 } from './generated/recallai-desktop-sdk';

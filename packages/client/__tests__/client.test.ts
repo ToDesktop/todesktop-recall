@@ -146,3 +146,50 @@ describe('RecallDesktopClient (smoke tests)', () => {
     expect(unsub2).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('compatibility with older desktop plugins', () => {
+  const originalWindow = (global as any).window;
+  const startRecording = jest.fn();
+  let client: ClientClass;
+
+  beforeEach(() => {
+    startRecording.mockReset().mockResolvedValue({ success: true, message: 'ok' });
+    (global as any).window = { todesktop: { recallDesktop: { startRecording } } };
+    client = new ClientClass();
+  });
+  afterEach(() => { (global as any).window = originalWindow; });
+
+  test('reports missing capabilities without requiring a new plugin method', () => {
+    expect(client.getCapabilities()).toEqual({
+      disableRawMedia: false, sendChatMessage: false, listDevices: false, setDesktopAudioDevice: false,
+    });
+  });
+
+  test.each([undefined, {}])('keeps legacy recording working when options are absent (%j)', async options => {
+    await expect(client.startRecording('window', 'token', options)).resolves.toMatchObject({ success: true });
+    expect(startRecording).toHaveBeenCalledWith('window', 'token');
+  });
+
+  test.each([true, false])('never silently ignores an unsupported Raw Media override (%s)', async disableRawMedia => {
+    await expect(client.startRecording('window', 'token', { disableRawMedia })).resolves.toMatchObject({
+      success: false, message: expect.stringContaining('Update the ToDesktop Recall plugin'),
+    });
+    expect(startRecording).not.toHaveBeenCalled();
+  });
+
+  test('returns useful errors for new methods on an older plugin', async () => {
+    const unsupported = { success: false, message: expect.stringContaining('not supported') };
+    await expect(client.sendChatMessage({ windowId: 'window', message: 'hello' })).resolves.toMatchObject(unsupported);
+    await expect(client.listDevices()).resolves.toMatchObject(unsupported);
+    await expect(client.setDesktopAudioDevice(null, 'input')).resolves.toMatchObject(unsupported);
+  });
+
+  test('preserves missing-plugin behavior for the new methods', async () => {
+    delete (global as any).window;
+    client = new ClientClass();
+    expect(Object.values(client.getCapabilities())).toEqual([false, false, false, false]);
+    await expect(client.sendChatMessage({ windowId: 'window', message: 'hello' })).rejects.toThrow(/not available/);
+    await expect(client.listDevices()).rejects.toThrow(/not available/);
+    await expect(client.setDesktopAudioDevice(null, 'input')).rejects.toThrow(/not available/);
+  });
+});

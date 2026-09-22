@@ -15,6 +15,9 @@ import {
   PluginStatus,
   RecallSdkError,
   StartRecordingRequest,
+  SendChatMessageConfig,
+  AudioDevice,
+  SetDesktopAudioDeviceRequest,
   StopRecordingRequest,
   PauseRecordingRequest,
   ResumeRecordingRequest,
@@ -31,7 +34,7 @@ import { recallSdkStore, setPluginContext } from "./store";
 import RecallAiSdk from "@recallai/desktop-sdk";
 
 class RecallDesktopMain {
-  private version = "1.3.14";
+  private version = "1.3.15";
   private isInitialized = false;
   private subscriptions: Map<RecallSdkEventType, Map<number, number>> =
     new Map();
@@ -278,10 +281,18 @@ class RecallDesktopMain {
             );
           }
 
-          await (RecallAiSdk.startRecording as any)({
+          if (request.disableRawMedia !== undefined && typeof request.disableRawMedia !== "boolean") {
+            throw new RecallSdkError("disableRawMedia must be a boolean", "INVALID_ARGUMENT");
+          }
+
+          const config: StartRecordingRequest = {
             windowId: request.windowId,
             uploadToken: request.uploadToken,
-          });
+          };
+          if (request.disableRawMedia !== undefined) {
+            config.disableRawMedia = request.disableRawMedia;
+          }
+          await RecallAiSdk.startRecording(config);
           return { success: true, message: "Recording started successfully" };
         } catch (error) {
           console.error("RecallDesktopMain: Start recording failed:", error);
@@ -291,6 +302,43 @@ class RecallDesktopMain {
               error instanceof RecallSdkError
                 ? error.message
                 : "Failed to start recording",
+          };
+        }
+      }
+    );
+
+    // Send a message through an active Raw Media recording
+    ipcMain.handle(
+      IPC_CHANNELS.SEND_CHAT_MESSAGE,
+      async (_event, request: SendChatMessageConfig): Promise<ApiResponse> => {
+        try {
+          if (!request || typeof request.windowId !== "string" || !request.windowId.trim()) {
+            throw new RecallSdkError("windowId must be a non-empty string", "INVALID_ARGUMENT");
+          }
+          if (typeof request.message !== "string" || request.message.length < 1 || request.message.length > 4096) {
+            throw new RecallSdkError("message must contain between 1 and 4096 characters", "INVALID_ARGUMENT");
+          }
+          if (request.to !== undefined && (typeof request.to !== "string" || !request.to.trim())) {
+            throw new RecallSdkError("to must be a non-empty string", "INVALID_ARGUMENT");
+          }
+          if (request.pin !== undefined && typeof request.pin !== "boolean") {
+            throw new RecallSdkError("pin must be a boolean", "INVALID_ARGUMENT");
+          }
+          if (!recallSdkStore.isSdkInitialized()) {
+            throw new RecallSdkError("SDK not initialized", "SDK_NOT_INITIALIZED");
+          }
+          const config: SendChatMessageConfig = {
+            windowId: request.windowId,
+            message: request.message,
+          };
+          if (request.to !== undefined) config.to = request.to;
+          if (request.pin !== undefined) config.pin = request.pin;
+          await RecallAiSdk.sendChatMessage(config);
+          return { success: true, message: "Chat message accepted by the SDK" };
+        } catch (error) {
+          return {
+            success: false,
+            message: error instanceof Error ? error.message : "Failed to send chat message",
           };
         }
       }
@@ -387,6 +435,50 @@ class RecallDesktopMain {
           return {
             success: false,
             message: "Failed to prepare desktop audio recording",
+          };
+        }
+      }
+    );
+
+    // List devices for Windows desktop audio recordings
+    ipcMain.handle(
+      IPC_CHANNELS.LIST_DEVICES,
+      async (): Promise<ApiResponse<AudioDevice[]>> => {
+        try {
+          if (!recallSdkStore.isSdkInitialized()) {
+            throw new RecallSdkError("SDK not initialized", "SDK_NOT_INITIALIZED");
+          }
+          const devices = await RecallAiSdk.listDevices();
+          return { success: true, message: "Audio devices retrieved successfully", data: devices };
+        } catch (error) {
+          return {
+            success: false,
+            message: error instanceof Error ? error.message : "Failed to list audio devices",
+          };
+        }
+      }
+    );
+
+    // Select a device for Windows desktop audio recordings
+    ipcMain.handle(
+      IPC_CHANNELS.SET_DESKTOP_AUDIO_DEVICE,
+      async (_event, request: SetDesktopAudioDeviceRequest): Promise<ApiResponse> => {
+        try {
+          if (!request || (request.id !== null && (typeof request.id !== "string" || !request.id.trim()))) {
+            throw new RecallSdkError("id must be a non-empty string or null", "INVALID_ARGUMENT");
+          }
+          if (request.direction !== "input" && request.direction !== "output") {
+            throw new RecallSdkError("direction must be input or output", "INVALID_ARGUMENT");
+          }
+          if (!recallSdkStore.isSdkInitialized()) {
+            throw new RecallSdkError("SDK not initialized", "SDK_NOT_INITIALIZED");
+          }
+          await RecallAiSdk.setDesktopAudioDevice(request.id, request.direction);
+          return { success: true, message: "Desktop audio device selected successfully" };
+        } catch (error) {
+          return {
+            success: false,
+            message: error instanceof Error ? error.message : "Failed to select desktop audio device",
           };
         }
       }

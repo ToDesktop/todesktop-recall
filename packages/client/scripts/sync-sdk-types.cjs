@@ -18,7 +18,8 @@ contents = contents
   .replace(/^\s*testSpeedModifier\?: string;\n/gm, '')
   .replace(/^\s*testTargetBundleId\?: string;\n/gm, '')
   .replace(/^\s*testTargetBundleIdRemapped\?: string;\n/gm, '')
-  .replace(/^export declare function testUnexpectedShutdown\(\): Promise<null>;\n/gm, '')
-  .replace(/^\s*testUnexpectedShutdown: typeof testUnexpectedShutdown;\n/gm, '');
+  .replace(/^(?:\/\*\*\n(?: \*.*\n)* \*\/\n)?export declare function testUnexpectedShutdown\(\): Promise<null>;\n/gm, '')
+  .replace(/^\s*testUnexpectedShutdown: typeof testUnexpectedShutdown;\n/gm, '')
+  .replace(/[ \t]+$/gm, '');
 
 fs.writeFileSync(destination, contents);
