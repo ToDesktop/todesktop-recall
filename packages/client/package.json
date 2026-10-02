@@ -15,7 +15,7 @@
     "clean": "rimraf dist",
     "typecheck": "npm run sync-sdk-types && tsc --noEmit",
     "lint": "eslint src --ext .ts",
-    "copy-types": "copyfiles -f src/generated/*.d.ts dist/",
+    "copy-types": "copyfiles -f src/generated/*.d.ts dist/ && copyfiles -f src/generated/*.d.ts dist/generated/",
     "sync-sdk-types": "node scripts/sync-sdk-types.cjs",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",

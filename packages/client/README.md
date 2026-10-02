@@ -355,6 +355,7 @@ This is a connection status, not a mute indicator. When computer audio is discon
     - Exposed `sendChatMessage`, `listDevices`, and `setDesktopAudioDevice` through the plugin and typed client
     - Added optional `startRecording(windowId, uploadToken, { disableRawMedia })` settings while preserving existing two-argument calls
     - Added bridge capability checks and clear unsupported-feature responses when a newer client runs with an older plugin
+    - Fixed packaged client declaration imports by including `dist/generated/` alongside the existing flat declaration files
     - Refreshed SDK declarations and aligned event types with upstream `rawMedia`, `participantId`, and permission status fields
   - 1.3.14
     - Updated `@recallai/desktop-sdk` to v2.0.32
