@@ -5,7 +5,28 @@ export interface RecallSdkConfig {
 	apiUrl: string;
 	requestPermissionsOnStartup: boolean;
 }
-export type RecallSdkEventType = "recording-started" | "recording-ended" | "upload-progress" | "meeting-detected" | "meeting-updated" | "meeting-closed" | "sdk-state-change" | "error" | "media-capture-status" | "participant-capture-status" | "compliance-message-status" | "permissions-granted" | "permission-status" | "realtime-event" | "shutdown" | "log" | "network-status";
+export interface StartRecordingOptions {
+	disableRawMedia?: boolean;
+}
+export interface SendChatMessageConfig {
+	windowId: string;
+	message: string;
+	to?: string;
+	pin?: boolean;
+}
+export type AudioDeviceDirection = "input" | "output";
+export interface AudioDevice {
+	id: string;
+	name: string;
+	direction: AudioDeviceDirection;
+}
+export interface RecallDesktopCapabilities {
+	disableRawMedia: boolean;
+	sendChatMessage: boolean;
+	listDevices: boolean;
+	setDesktopAudioDevice: boolean;
+}
+export type RecallSdkEventType = "recording-started" | "recording-ended" | "upload-progress" | "meeting-detected" | "meeting-updated" | "meeting-closed" | "sdk-state-change" | "error" | "media-capture-status" | "participant-capture-status" | "compliance-message-status" | "permissions-granted" | "permission-status" | "realtime-event" | "shutdown" | "log" | "network-status" | "zoom-computer-audio";
 export type PermissionType = "accessibility" | "screen-capture" | "microphone" | "system-audio" | "full-disk-access" | "teams-automation" | "browser-automation";
 export interface ApiResponse<T = any> {
 	success: boolean;
@@ -51,9 +72,16 @@ export declare function getStatus(): Promise<PluginStatus>;
  * Start recording a meeting
  * @param windowId The meeting window ID
  * @param uploadToken Upload token from your backend
+ * @param options Optional per-recording capture settings
  * @returns Promise resolving to recording start result
  */
-export declare function startRecording(windowId: string, uploadToken: string): Promise<ApiResponse>;
+export declare function startRecording(windowId: string, uploadToken: string, options?: StartRecordingOptions): Promise<ApiResponse>;
+/**
+ * Send a chat message during a supported Raw Media recording
+ * @param config Recording ID, message, and optional recipient and pin settings
+ * @returns Promise resolving when the SDK accepts the message
+ */
+export declare function sendChatMessage(config: SendChatMessageConfig): Promise<ApiResponse>;
 /**
  * Stop recording a meeting
  * @param windowId The meeting window ID
@@ -85,6 +113,18 @@ export declare function uploadRecording(windowId: string): Promise<ApiResponse>;
  */
 export declare function prepareDesktopAudioRecording(config?: PrepareDesktopAudioRecordingConfig): Promise<ApiResponse<PrepareDesktopAudioResponse>>;
 /**
+ * List Windows input and output devices for desktop audio recordings
+ * @returns Promise resolving to the available audio devices
+ */
+export declare function listDevices(): Promise<ApiResponse<AudioDevice[]>>;
+/**
+ * Select a Windows device for desktop audio recordings
+ * @param id Device ID, or null to restore automatic selection
+ * @param direction Input or output endpoint
+ * @returns Promise resolving to the selection result
+ */
+export declare function setDesktopAudioDevice(id: string | null, direction: AudioDeviceDirection): Promise<ApiResponse>;
+/**
  * Request a specific permission from the user
  * @param permission The permission to request
  * @returns Promise resolving to permission request result
@@ -113,6 +153,11 @@ export declare function addEventListener(eventType: RecallSdkEventType, callback
  * @returns Plugin version string
  */
 export declare function getVersion(): string;
+/**
+ * Get features exposed by this bridge, regardless of platform or permissions
+ * @returns Bridge capability flags
+ */
+export declare function getCapabilities(): RecallDesktopCapabilities;
 /**
  * Convenience method for handling meeting detection events
  * @param callback Function to call when a meeting is detected
@@ -155,16 +200,20 @@ export type ExportedApi = {
 	shutdownSdk: typeof shutdownSdk;
 	getStatus: typeof getStatus;
 	startRecording: typeof startRecording;
+	sendChatMessage: typeof sendChatMessage;
 	stopRecording: typeof stopRecording;
 	pauseRecording: typeof pauseRecording;
 	resumeRecording: typeof resumeRecording;
 	uploadRecording: typeof uploadRecording;
 	prepareDesktopAudioRecording: typeof prepareDesktopAudioRecording;
+	listDevices: typeof listDevices;
+	setDesktopAudioDevice: typeof setDesktopAudioDevice;
 	requestPermission: typeof requestPermission;
 	setConfig: typeof setConfig;
 	getConfig: typeof getConfig;
 	addEventListener: typeof addEventListener;
 	getVersion: typeof getVersion;
+	getCapabilities: typeof getCapabilities;
 	onMeetingDetected: typeof onMeetingDetected;
 	onRecordingStateChange: typeof onRecordingStateChange;
 	onUploadProgress: typeof onUploadProgress;

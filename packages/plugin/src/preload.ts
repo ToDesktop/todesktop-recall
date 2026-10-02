@@ -13,6 +13,12 @@ import {
   ApiResponse, 
   PluginStatus, 
   StartRecordingRequest,
+  StartRecordingOptions,
+  SendChatMessageConfig,
+  AudioDevice,
+  AudioDeviceDirection,
+  SetDesktopAudioDeviceRequest,
+  RecallDesktopCapabilities,
   StopRecordingRequest,
   PauseRecordingRequest,
   ResumeRecordingRequest,
@@ -52,11 +58,28 @@ export async function getStatus(): Promise<PluginStatus> {
  * Start recording a meeting
  * @param windowId The meeting window ID
  * @param uploadToken Upload token from your backend
+ * @param options Optional per-recording capture settings
  * @returns Promise resolving to recording start result
  */
-export async function startRecording(windowId: string, uploadToken: string): Promise<ApiResponse> {
+export async function startRecording(
+  windowId: string,
+  uploadToken: string,
+  options?: StartRecordingOptions
+): Promise<ApiResponse> {
   const request: StartRecordingRequest = { windowId, uploadToken };
+  if (options?.disableRawMedia !== undefined) {
+    request.disableRawMedia = options.disableRawMedia;
+  }
   return ipcRenderer.invoke(IPC_CHANNELS.START_RECORDING, request);
+}
+
+/**
+ * Send a chat message during a supported Raw Media recording
+ * @param config Recording ID, message, and optional recipient and pin settings
+ * @returns Promise resolving when the SDK accepts the message
+ */
+export async function sendChatMessage(config: SendChatMessageConfig): Promise<ApiResponse> {
+  return ipcRenderer.invoke(IPC_CHANNELS.SEND_CHAT_MESSAGE, config);
 }
 
 /**
@@ -108,6 +131,28 @@ export async function prepareDesktopAudioRecording(
   config?: PrepareDesktopAudioRecordingConfig
 ): Promise<ApiResponse<PrepareDesktopAudioResponse>> {
   return ipcRenderer.invoke(IPC_CHANNELS.PREPARE_DESKTOP_AUDIO, config);
+}
+
+/**
+ * List Windows input and output devices for desktop audio recordings
+ * @returns Promise resolving to the available audio devices
+ */
+export async function listDevices(): Promise<ApiResponse<AudioDevice[]>> {
+  return ipcRenderer.invoke(IPC_CHANNELS.LIST_DEVICES);
+}
+
+/**
+ * Select a Windows device for desktop audio recordings
+ * @param id Device ID, or null to restore automatic selection
+ * @param direction Input or output endpoint
+ * @returns Promise resolving to the selection result
+ */
+export async function setDesktopAudioDevice(
+  id: string | null,
+  direction: AudioDeviceDirection
+): Promise<ApiResponse> {
+  const request: SetDesktopAudioDeviceRequest = { id, direction };
+  return ipcRenderer.invoke(IPC_CHANNELS.SET_DESKTOP_AUDIO_DEVICE, request);
 }
 
 /**
@@ -165,7 +210,20 @@ export function addEventListener(eventType: RecallSdkEventType, callback: (data:
  * @returns Plugin version string
  */
 export function getVersion(): string {
-  return '1.3.14';
+  return '1.3.15';
+}
+
+/**
+ * Get features exposed by this bridge, regardless of platform or permissions
+ * @returns Bridge capability flags
+ */
+export function getCapabilities(): RecallDesktopCapabilities {
+  return {
+    disableRawMedia: true,
+    sendChatMessage: true,
+    listDevices: true,
+    setDesktopAudioDevice: true,
+  };
 }
 
 /**
@@ -229,16 +287,20 @@ type ExportedApi = {
   shutdownSdk: typeof shutdownSdk;
   getStatus: typeof getStatus;
   startRecording: typeof startRecording;
+  sendChatMessage: typeof sendChatMessage;
   stopRecording: typeof stopRecording;
   pauseRecording: typeof pauseRecording;
   resumeRecording: typeof resumeRecording;
   uploadRecording: typeof uploadRecording;
   prepareDesktopAudioRecording: typeof prepareDesktopAudioRecording;
+  listDevices: typeof listDevices;
+  setDesktopAudioDevice: typeof setDesktopAudioDevice;
   requestPermission: typeof requestPermission;
   setConfig: typeof setConfig;
   getConfig: typeof getConfig;
   addEventListener: typeof addEventListener;
   getVersion: typeof getVersion;
+  getCapabilities: typeof getCapabilities;
   onMeetingDetected: typeof onMeetingDetected;
   onRecordingStateChange: typeof onRecordingStateChange;
   onUploadProgress: typeof onUploadProgress;

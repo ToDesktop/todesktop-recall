@@ -102,6 +102,34 @@ stopUploadListener();
 stopRecordingListener();
 ```
 
+### Raw Media and Chat Messages
+
+Existing two-argument recording calls keep the SDK's default capture behavior. To disable Raw Media for a particular recording, pass an optional third argument:
+
+```typescript
+await recallDesktop.startRecording(windowId, uploadToken, {
+  disableRawMedia: true,
+});
+```
+
+Omitting `disableRawMedia`, or setting it to `false`, leaves Raw Media available when the workspace, platform, and permissions support it. It does not force Raw Media to activate. Read `rawMedia` on the `recording-started` event to determine which capture mode actually started.
+
+Chat messages require an active Raw Media recording on a supported macOS Google Meet or Microsoft Teams setup:
+
+```typescript
+const result = await recallDesktop.sendChatMessage({
+  windowId,
+  message: "The meeting notes are ready.",
+  to: "everyone",
+  pin: false,
+});
+if (!result.success) {
+  console.error(result.message);
+}
+```
+
+Messages must contain 1–4,096 characters. `to` accepts a participant ID or `"everyone"` (the default); `pin` defaults to `false`. Success means the SDK accepted the message for queuing, not that the meeting platform displayed it. See the [Recall Raw Media documentation](https://docs.recall.ai/docs/desktop-recording-sdk-raw-media) for platform and permission requirements.
+
 ### Desktop Audio Recording
 
 For capturing audio from applications other than supported meeting platforms:
@@ -118,6 +146,38 @@ await recallDesktop.startRecording(windowId, uploadToken);
 // Stop when done
 await recallDesktop.stopRecording(windowId);
 ```
+
+On Windows, you can list and select the input and output devices before preparing desktop audio capture:
+
+```typescript
+const devices = await recallDesktop.listDevices();
+if (devices.success && devices.data) {
+  const microphone = devices.data.find(device => device.direction === "input");
+  if (microphone) {
+    const selection = await recallDesktop.setDesktopAudioDevice(microphone.id, "input");
+    if (!selection.success) console.error(selection.message);
+  }
+}
+
+// Restore automatic output-device selection.
+await recallDesktop.setDesktopAudioDevice(null, "output");
+```
+
+These APIs apply only to sources created with `prepareDesktopAudioRecording()`. They do not change device selection for detected meetings and are unavailable on macOS. Initialize the SDK before calling them. Device enumeration returns `ApiResponse<AudioDevice[]>`, where each device has `id`, `name`, and `direction` (`"input"` or `"output"`).
+
+### Compatibility with Older Desktop Apps
+
+The new methods and recording option require an updated installed plugin. A newer web client can check bridge support before displaying the corresponding controls:
+
+```typescript
+const capabilities = recallDesktop.getCapabilities();
+// disableRawMedia, sendChatMessage, listDevices, setDesktopAudioDevice
+console.log(capabilities);
+```
+
+These flags describe the installed bridge only; they do not indicate OS support, granted permissions, or an active Raw Media recording. Missing capabilities are `false` on older plugins or outside ToDesktop.
+
+Existing calls such as `startRecording(windowId, uploadToken)` retain their arguments and behavior. When connected to an older plugin, new methods and an explicit `disableRawMedia` option return `{ success: false, message: ... }` asking for a plugin update. The client does not silently ignore the option. If no plugin is installed, recording and device methods continue to throw the existing plugin-unavailable error.
 
 ### Permission Management
 
@@ -225,12 +285,16 @@ app.post("/webhooks/recall", (req, res) => {
 - `initSdk()` - Initialize the Recall SDK
 - `shutdownSdk()` - Shutdown the SDK and cleanup
 - `getStatus()` - Get plugin and SDK status
-- `startRecording(windowId, uploadToken)` - Start recording a meeting
+- `getCapabilities()` - Get synchronous feature flags for the installed bridge
+- `startRecording(windowId, uploadToken, options?)` - Start recording; optionally pass `{ disableRawMedia: true }`
+- `sendChatMessage({ windowId, message, to?, pin? })` - Send a message through an active macOS Raw Media recording
 - `stopRecording(windowId)` - Stop recording
 - `pauseRecording(windowId)` - Pause recording
 - `resumeRecording(windowId)` - Resume recording
 - `uploadRecording(windowId)` - Compatibility no-op; recordings now stream during capture
 - `prepareDesktopAudioRecording()` - Prepare desktop audio capture
+- `listDevices()` - List Windows desktop-audio input and output devices
+- `setDesktopAudioDevice(id, direction)` - Select a Windows desktop-audio device, or pass `null` to restore automatic selection
 
 ### Event Listeners
 
@@ -242,6 +306,20 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
 - `permissions-granted`, `permission-status`
 - `media-capture-status`, `participant-capture-status`, `compliance-message-status`, `shutdown`
 - `log`, `network-status`
+- `zoom-computer-audio` (macOS, SDK 2.0.34+)
+
+The `zoom-computer-audio` event reports sustained changes to Zoom's computer-audio connection:
+
+```typescript
+const stopAudioListener = recallDesktop.addEventListener(
+  "zoom-computer-audio",
+  ({ window, status }) => {
+    console.log(window.id, status); // "connected" or "disconnected"
+  }
+);
+```
+
+This is a connection status, not a mute indicator. When computer audio is disconnected (for example, when joining audio by phone), the SDK continues capturing the local microphone. Delivery requires an installed plugin using SDK 2.0.34 or later; older SDKs do not emit this event.
 
 ### Configuration
 
@@ -269,6 +347,16 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
   ```
 
   ## Changelog
+  - 1.3.15
+    - Updated `@recallai/desktop-sdk` from v2.0.32 to v2.0.34 in the plugin and client
+    - Added typed `zoom-computer-audio` event support for macOS connection changes
+    - Pulled in upstream Raw Media stabilization, macOS capture performance, Google Meet compliance messaging, Zoom Web and Slack meeting handling, microphone teardown, and AssemblyAI retry improvements
+    - Pulled in upstream Raw Media concurrency, waiting-room, and Teams permission fixes; Windows audio initialization and Teams compliance messaging improvements; and Google Meet, Zoom, and Slack capture and detection fixes
+    - Exposed `sendChatMessage`, `listDevices`, and `setDesktopAudioDevice` through the plugin and typed client
+    - Added optional `startRecording(windowId, uploadToken, { disableRawMedia })` settings while preserving existing two-argument calls
+    - Added bridge capability checks and clear unsupported-feature responses when a newer client runs with an older plugin
+    - Fixed packaged client declaration imports by including `dist/generated/` alongside the existing flat declaration files
+    - Refreshed SDK declarations and aligned event types with upstream `rawMedia`, `participantId`, and permission status fields
   - 1.3.14
     - Updated `@recallai/desktop-sdk` to v2.0.32
     - Pulled in upstream Chromium meeting detection without Full Disk Access on macOS 27, Google Meet and Zoom detection and meeting metadata fixes, and recording-start and transcription finalization reliability improvements

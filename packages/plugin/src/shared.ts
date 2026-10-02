@@ -15,9 +15,12 @@ export const IPC_CHANNELS = {
   PAUSE_RECORDING: "recall-desktop:pause-recording",
   RESUME_RECORDING: "recall-desktop:resume-recording",
   UPLOAD_RECORDING: "recall-desktop:upload-recording",
+  SEND_CHAT_MESSAGE: "recall-desktop:send-chat-message",
 
   // Desktop audio recording
   PREPARE_DESKTOP_AUDIO: "recall-desktop:prepare-desktop-audio",
+  LIST_DEVICES: "recall-desktop:list-devices",
+  SET_DESKTOP_AUDIO_DEVICE: "recall-desktop:set-desktop-audio-device",
 
   // Permission management
   REQUEST_PERMISSION: "recall-desktop:request-permission",
@@ -78,7 +81,11 @@ export interface MeetingWindow {
 }
 
 // Recording request/response types
-export interface StartRecordingRequest {
+export interface StartRecordingOptions {
+  disableRawMedia?: boolean;
+}
+
+export interface StartRecordingRequest extends StartRecordingOptions {
   windowId: string;
   uploadToken: string;
 }
@@ -99,6 +106,34 @@ export interface UploadRecordingRequest {
   windowId: string;
 }
 
+export interface SendChatMessageConfig {
+  windowId: string;
+  message: string;
+  to?: string;
+  pin?: boolean;
+}
+
+export type AudioDeviceDirection = "input" | "output";
+
+export interface AudioDevice {
+  id: string;
+  name: string;
+  direction: AudioDeviceDirection;
+}
+
+export interface SetDesktopAudioDeviceRequest {
+  id: string | null;
+  direction: AudioDeviceDirection;
+}
+
+// These flags describe the installed bridge, not platform or permission availability.
+export interface RecallDesktopCapabilities {
+  disableRawMedia: boolean;
+  sendChatMessage: boolean;
+  listDevices: boolean;
+  setDesktopAudioDevice: boolean;
+}
+
 // SDK Events from Recall SDK (mirror upstream)
 export type RecallSdkEventType =
   | "recording-started"
@@ -117,7 +152,8 @@ export type RecallSdkEventType =
   | "realtime-event"
   | "shutdown"
   | "log"
-  | "network-status";
+  | "network-status"
+  | "zoom-computer-audio";
 
 export interface RecallSdkEvent {
   type: RecallSdkEventType;
@@ -142,6 +178,7 @@ export interface SdkStateChangeEvent {
 
 export interface RecordingStartedEvent {
   window: MeetingWindow;
+  rawMedia: boolean;
 }
 
 export interface RecordingEndedEvent {
@@ -169,6 +206,7 @@ export interface MediaCaptureStatusEvent {
 
 export interface ParticipantCaptureStatusEvent {
   window: MeetingWindow;
+  participantId: number;
   type: "video" | "audio" | "screenshare";
   capturing: boolean;
 }
@@ -192,7 +230,8 @@ export interface SdkErrorEvent {
 
 export interface PermissionStatusEvent {
   permission: PermissionType;
-  status: string;
+  granted: boolean;
+  status: "granted" | "not_requested" | "denied" | "not_installed" | "error";
 }
 
 export interface ShutdownEvent {
@@ -202,6 +241,11 @@ export interface ShutdownEvent {
 
 export interface NetworkStatusEvent {
   status: "reconnected" | "disconnected";
+}
+
+export interface ZoomComputerAudioEvent {
+  window: MeetingWindow;
+  status: "connected" | "disconnected";
 }
 
 export interface LogEvent {

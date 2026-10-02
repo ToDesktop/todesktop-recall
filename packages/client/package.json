@@ -1,6 +1,6 @@
 {
   "name": "@todesktop/client-recall",
-  "version": "1.3.14",
+  "version": "1.3.15",
   "description": "ToDesktop plugin for Recall.ai Desktop Recording SDK - Client library",
   "private": false,
   "main": "dist/index.js",
@@ -15,7 +15,7 @@
     "clean": "rimraf dist",
     "typecheck": "npm run sync-sdk-types && tsc --noEmit",
     "lint": "eslint src --ext .ts",
-    "copy-types": "copyfiles -f src/generated/*.d.ts dist/",
+    "copy-types": "copyfiles -f src/generated/*.d.ts dist/ && copyfiles -f src/generated/*.d.ts dist/generated/",
     "sync-sdk-types": "node scripts/sync-sdk-types.cjs",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
@@ -37,7 +37,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@recallai/desktop-sdk": "2.0.32",
+    "@recallai/desktop-sdk": "2.0.34",
     "rimraf": "^5.0.0"
   },
   "peerDependencies": {
