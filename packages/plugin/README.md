@@ -347,6 +347,11 @@ This is a connection status, not a mute indicator. When computer audio is discon
   ```
 
   ## Changelog
+  - 1.3.16
+    - Updated `@recallai/desktop-sdk` from v2.0.34 to v2.0.36 in the plugin and client
+    - Pulled in upstream Google Meet Raw Media and meeting-closed fixes on macOS, plus Chrome 156 support
+    - Pulled in upstream Teams and Google Meet screenshare capture, Google Meet video bounds, and Windows compliance messaging improvements
+    - Pulled in upstream recording cleanup and speaker attribution fixes
   - 1.3.15
     - Updated `@recallai/desktop-sdk` from v2.0.32 to v2.0.34 in the plugin and client
     - Added typed `zoom-computer-audio` event support for macOS connection changes
