@@ -347,6 +347,9 @@ This is a connection status, not a mute indicator. When computer audio is discon
   ```
 
   ## Changelog
+  - 1.3.17
+    - Updated `@recallai/desktop-sdk` from v2.0.36 to v2.0.39 in the plugin and client
+    - Pulled in Arc meeting detection, Zoom Desktop compliance messaging and title fixes, Teams Desktop and Teams Web detection fixes, and macOS accessibility state fixes
   - 1.3.16
     - Updated `@recallai/desktop-sdk` from v2.0.34 to v2.0.36 in the plugin and client
     - Pulled in upstream Google Meet Raw Media and meeting-closed fixes on macOS, plus Chrome 156 support
