@@ -347,6 +347,10 @@ This is a connection status, not a mute indicator. When computer audio is discon
   ```
 
   ## Changelog
+  - 1.3.18
+    - Updated `@recallai/desktop-sdk` from v2.0.39 to v2.0.40 in the plugin and client
+    - Pulled in Island Browser support, Zoom Web compliance messaging on macOS, meeting URL and compliance messaging fixes across macOS and Windows, and Google Meet microphone mute detection fixes on Windows
+    - The SDK now forwards `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, and `NO_PROXY` to its native process; no wrapper API or type changes were required
   - 1.3.17
     - Updated `@recallai/desktop-sdk` from v2.0.36 to v2.0.39 in the plugin and client
     - Pulled in Arc meeting detection, Zoom Desktop compliance messaging and title fixes, Teams Desktop and Teams Web detection fixes, and macOS accessibility state fixes
