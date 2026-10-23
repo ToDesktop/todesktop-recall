@@ -347,6 +347,10 @@ This is a connection status, not a mute indicator. When computer audio is discon
   ```
 
   ## Changelog
+  - 1.3.19
+    - Updated `@recallai/desktop-sdk` from v2.0.40 to v2.0.41 in the plugin and client
+    - Pulled in a macOS fix for raw media on Google Meet meetings joined via `meet.google.com/meet/<code>` URLs
+    - No wrapper API or type changes were required
   - 1.3.18
     - Updated `@recallai/desktop-sdk` from v2.0.39 to v2.0.40 in the plugin and client
     - Pulled in Island Browser support, Zoom Web compliance messaging on macOS, meeting URL and compliance messaging fixes across macOS and Windows, and Google Meet microphone mute detection fixes on Windows

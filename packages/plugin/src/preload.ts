@@ -210,7 +210,7 @@ export function addEventListener(eventType: RecallSdkEventType, callback: (data:
  * @returns Plugin version string
  */
 export function getVersion(): string {
-  return '1.3.18';
+  return '1.3.19';
 }
 
 /**
