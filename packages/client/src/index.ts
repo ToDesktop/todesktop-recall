@@ -429,6 +429,7 @@ export type {
   PermissionsGrantedEvent,
   PermissionStatusEvent,
   ErrorEvent as SdkErrorEvent,
+  ProviderErrorEvent,
   RealtimeEvent,
   ShutdownEvent,
   LogEvent,

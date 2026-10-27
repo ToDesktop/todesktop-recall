@@ -78,6 +78,7 @@ export interface MeetingWindow {
   title?: string;
   url?: string;
   platform?: string;
+  process_name?: string;
 }
 
 // Recording request/response types
@@ -144,6 +145,7 @@ export type RecallSdkEventType =
   | "meeting-closed"
   | "sdk-state-change"
   | "error"
+  | "provider-error"
   | "media-capture-status"
   | "participant-capture-status"
   | "compliance-message-status"
@@ -228,10 +230,20 @@ export interface SdkErrorEvent {
   message: string;
 }
 
+export interface ProviderErrorEvent {
+  window: MeetingWindow;
+  class: "transcription";
+  provider: string;
+  providerError?: {
+    message: string;
+  };
+}
+
 export interface PermissionStatusEvent {
   permission: PermissionType;
   granted: boolean;
   status: "granted" | "not_requested" | "denied" | "not_installed" | "error";
+  error?: string;
 }
 
 export interface ShutdownEvent {
@@ -264,7 +276,8 @@ export type PermissionType =
   | "system-audio"
   | "full-disk-access"
   | "teams-automation"
-  | "browser-automation";
+  | "browser-automation"
+  | "zoom-raw-media";
 
 // API Response types
 export interface ApiResponse<T = any> {
@@ -302,7 +315,7 @@ export interface SdkInitOptions {
   apiUrl: string;
   acquirePermissionsOnStartup?: Exclude<
     PermissionType,
-    "teams-automation" | "browser-automation"
+    "teams-automation" | "browser-automation" | "zoom-raw-media"
   >[];
   restartOnError?: boolean;
 }
