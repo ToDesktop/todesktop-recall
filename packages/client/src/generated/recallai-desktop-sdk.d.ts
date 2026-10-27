@@ -6,7 +6,7 @@
  *
  * @see https://docs.recall.ai/docs/desktop-recording-sdk-event-types
  */
-export type RecallAiSdkEvent = RecordingStartEvent | RecordingStopEvent | UploadProgressEvent | MeetingDetectedEvent | MeetingUpdatedEvent | MeetingClosedEvent | SdkStateChangeEvent | ErrorEvent | MediaCaptureStatusEvent | ParticipantCaptureStatusEvent | ComplianceMessageStatusEvent | PermissionsGrantedEvent | PermissionStatusEvent | RealtimeEvent | ShutdownEvent | LogEvent | NetworkStatusEvent | ZoomComputerAudioEvent;
+export type RecallAiSdkEvent = RecordingStartEvent | RecordingStopEvent | UploadProgressEvent | MeetingDetectedEvent | MeetingUpdatedEvent | MeetingClosedEvent | SdkStateChangeEvent | ErrorEvent | ProviderErrorEvent | MediaCaptureStatusEvent | ParticipantCaptureStatusEvent | ComplianceMessageStatusEvent | PermissionsGrantedEvent | PermissionStatusEvent | RealtimeEvent | ShutdownEvent | LogEvent | NetworkStatusEvent | ZoomComputerAudioEvent;
 /** Maps every supported event name to the payload received by its listener. */
 export type EventTypeToPayloadMap = {
     /** Emitted after media capture has started. */
@@ -29,6 +29,11 @@ export type EventTypeToPayloadMap = {
     'sdk-state-change': SdkStateChangeEvent;
     /** Emitted when the SDK encounters an asynchronous error. */
     'error': ErrorEvent;
+    /**
+     * Emitted when the SDK gives up on an external provider for a recording, such as after
+     * repeated failed attempts to connect to the configured transcription provider.
+     */
+    'provider-error': ProviderErrorEvent;
     /** Emitted when recording-level audio or video capture starts or stops. */
     'media-capture-status': MediaCaptureStatusEvent;
     /** Emitted when capture of an individual participant's media starts or stops. */
@@ -56,7 +61,7 @@ export type EventTypeToPayloadMap = {
  * These permissions are only required on macOS. Windows reports permission requests as granted
  * because it does not require the corresponding macOS consent flows.
  *
- * `teams-automation` and `browser-automation` enable Raw Media and must be requested from an
+ * `teams-automation`, `browser-automation`, and `zoom-raw-media` enable Raw Media and must be requested from an
  * explicit user action before a meeting. They cannot be included in
  * {@link RecallAiSdkConfig.acquirePermissionsOnStartup}.
  *
@@ -77,7 +82,9 @@ export type Permission =
 /** Prepare Microsoft Teams Desktop for Raw Media capture. macOS only. */
  | 'teams-automation'
 /** Prepare the supported default Chromium browser for Google Meet Raw Media. macOS only. */
- | 'browser-automation';
+ | 'browser-automation'
+/** Configure Zoom for Raw Media. macOS only. Zoom may restart. */
+ | 'zoom-raw-media';
 /** Identifies a meeting or prepared desktop-audio source known to the SDK. */
 export interface RecallAiSdkWindow {
     /**
@@ -91,6 +98,8 @@ export interface RecallAiSdkWindow {
     url?: string;
     /** Recall.ai meeting-platform identifier, when known. */
     platform?: string;
+    /** Hosting application's macOS bundle ID or Windows executable basename (including `.exe`); absent when unavailable or recording the whole desktop. */
+    process_name?: string;
 }
 /** Options used to initialize the Desktop Recording SDK. */
 export interface RecallAiSdkConfig {
@@ -110,7 +119,7 @@ export interface RecallAiSdkConfig {
      * automation permissions; request those separately from an explicit user interaction.
      * Ignored on Windows, where these permission flows are unnecessary.
      */
-    acquirePermissionsOnStartup?: Exclude<Permission, 'teams-automation' | 'browser-automation'>[];
+    acquirePermissionsOnStartup?: Exclude<Permission, 'teams-automation' | 'browser-automation' | 'zoom-raw-media'>[];
     [key: string]: any;
 }
 /** Options used to start recording a detected meeting or prepared desktop-audio source. */
@@ -273,6 +282,8 @@ export interface PermissionStatusEvent {
      * supported default browser is unavailable.
      */
     status: 'granted' | 'not_requested' | 'denied' | 'not_installed' | 'error';
+    /** Setup error details, when `status` is `error`. */
+    error?: string;
 }
 /** Payload for an asynchronous SDK error. */
 export interface ErrorEvent {
@@ -282,6 +293,20 @@ export interface ErrorEvent {
     type: string;
     /** Human-readable diagnostic message. */
     message: string;
+}
+/** Payload for the `provider-error` event. */
+export interface ProviderErrorEvent {
+    /** Recording affected by the provider failure. */
+    window: RecallAiSdkWindow;
+    /** Kind of external provider that failed. */
+    class: 'transcription';
+    /** Provider identifier, such as `deepgram` or `assemblyai_v3`. */
+    provider: string;
+    /** Details of the provider's last error, when available. */
+    providerError?: {
+        /** Error message as reported by the provider; the format varies by provider. */
+        message: string;
+    };
 }
 /** Payload delivered for a configured `desktop_sdk_callback` realtime event. */
 export interface RealtimeEvent {
@@ -501,7 +526,7 @@ export declare function setDesktopAudioDevice(id: string | null, dir: AudioDevic
  * `permission-status` for the resulting state; promise resolution does not by itself mean the user
  * granted access. Windows does not require these macOS permissions and reports requests as granted.
  *
- * Request `teams-automation` and `browser-automation` only from an explicit user interaction and
+ * Request `teams-automation`, `browser-automation`, and `zoom-raw-media` only from an explicit user interaction and
  * before a meeting starts. Automation setup may restart Teams or the supported default browser and
  * must not be requested through `acquirePermissionsOnStartup`.
  *

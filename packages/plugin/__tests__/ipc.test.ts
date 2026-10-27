@@ -168,10 +168,11 @@ test('capabilities describe the bridge without calling native APIs', () => {
   expect(invoke).not.toHaveBeenCalled();
 });
 
-test('forwards Zoom computer-audio connection changes through IPC and stops on unsubscribe', () => {
+let nextSenderId = 1;
+function connectRenderer() {
   const rendererEvents = new EventEmitter();
   const sender = {
-    id: 1,
+    id: nextSenderId++,
     once: jest.fn(),
     send: jest.fn((channel: string, payload: unknown) => rendererEvents.emit(channel, {}, payload)),
   };
@@ -188,7 +189,11 @@ test('forwards Zoom computer-audio connection changes through IPC and stops on u
     rendererEvents.removeListener(channel, listener);
     return ipcRenderer;
   });
+  return { rendererEvents, sender };
+}
 
+test('forwards Zoom computer-audio connection changes through IPC and stops on unsubscribe', () => {
+  const { rendererEvents, sender } = connectRenderer();
   const received = jest.fn();
   const unsubscribe = client.addEventListener('zoom-computer-audio', payload => {
     const status: 'connected' | 'disconnected' = payload.status;
@@ -210,4 +215,26 @@ test('forwards Zoom computer-audio connection changes through IPC and stops on u
   expect(sender.send).toHaveBeenCalledTimes(2);
   expect(received).toHaveBeenCalledTimes(2);
   expect(rendererEvents.listenerCount('recall-desktop:event:zoom-computer-audio')).toBe(0);
+});
+
+test('forwards transcription provider errors through IPC', () => {
+  const { sender } = connectRenderer();
+  const received = jest.fn();
+  const unsubscribe = client.addEventListener('provider-error', payload => {
+    const providerClass: 'transcription' = payload.class;
+    received(payload.window.id, providerClass, payload.provider, payload.providerError?.message);
+  });
+  expect(sdk.addEventListener).toHaveBeenCalledWith('provider-error', expect.any(Function));
+  const emit = sdk.addEventListener.mock.calls.find(([type]) => type === 'provider-error')![1];
+  const payload = {
+    window: { id: 'meet-window', platform: 'google-meet', process_name: 'com.google.Chrome' },
+    class: 'transcription' as const,
+    provider: 'deepgram',
+    providerError: { message: 'connection refused' },
+  };
+
+  emit(payload);
+  expect(sender.send).toHaveBeenLastCalledWith('recall-desktop:event:provider-error', payload);
+  expect(received).toHaveBeenCalledWith('meet-window', 'transcription', 'deepgram', 'connection refused');
+  unsubscribe();
 });

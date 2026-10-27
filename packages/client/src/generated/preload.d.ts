@@ -26,8 +26,8 @@ export interface RecallDesktopCapabilities {
 	listDevices: boolean;
 	setDesktopAudioDevice: boolean;
 }
-export type RecallSdkEventType = "recording-started" | "recording-ended" | "upload-progress" | "meeting-detected" | "meeting-updated" | "meeting-closed" | "sdk-state-change" | "error" | "media-capture-status" | "participant-capture-status" | "compliance-message-status" | "permissions-granted" | "permission-status" | "realtime-event" | "shutdown" | "log" | "network-status" | "zoom-computer-audio";
-export type PermissionType = "accessibility" | "screen-capture" | "microphone" | "system-audio" | "full-disk-access" | "teams-automation" | "browser-automation";
+export type RecallSdkEventType = "recording-started" | "recording-ended" | "upload-progress" | "meeting-detected" | "meeting-updated" | "meeting-closed" | "sdk-state-change" | "error" | "provider-error" | "media-capture-status" | "participant-capture-status" | "compliance-message-status" | "permissions-granted" | "permission-status" | "realtime-event" | "shutdown" | "log" | "network-status" | "zoom-computer-audio";
+export type PermissionType = "accessibility" | "screen-capture" | "microphone" | "system-audio" | "full-disk-access" | "teams-automation" | "browser-automation" | "zoom-raw-media";
 export interface ApiResponse<T = any> {
 	success: boolean;
 	message: string;

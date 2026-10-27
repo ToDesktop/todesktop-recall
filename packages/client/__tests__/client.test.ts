@@ -86,6 +86,9 @@ describe('RecallDesktopClient (smoke tests)', () => {
     await client.requestPermission('browser-automation');
     expect(calls.requestPermission).toEqual(['browser-automation']);
 
+    await client.requestPermission('zoom-raw-media');
+    expect(calls.requestPermission).toEqual(['zoom-raw-media']);
+
     await client.setConfig({ apiUrl: 'https://us-east-1.recall.ai' });
     expect(calls.setConfig).toEqual([{ apiUrl: 'https://us-east-1.recall.ai' }]);
 

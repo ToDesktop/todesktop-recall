@@ -201,7 +201,7 @@ const removePermissionListener = recallDesktop.addEventListener(
 removePermissionListener();
 ```
 
-You can also request `teams-automation` and `browser-automation` through `requestPermission()`. These permissions cannot be requested through the SDK's `acquirePermissionsOnStartup` option and are not included in the plugin's startup permission requests.
+You can also request `teams-automation`, `browser-automation`, and `zoom-raw-media` (macOS, SDK 2.0.42+; Zoom may restart) through `requestPermission()`. Request them only from an explicit user interaction. These permissions cannot be requested through the SDK's `acquirePermissionsOnStartup` option and are not included in the plugin's startup permission requests.
 
 ## Backend Integration
 
@@ -302,7 +302,7 @@ Use `recallDesktop.addEventListener(eventType, callback)` to subscribe. Availabl
 
 - `meeting-detected`, `meeting-updated`, `meeting-closed`
 - `recording-started`, `recording-ended`, `sdk-state-change` (deprecated)
-- `upload-progress` (deprecated), `realtime-event`, `error`
+- `upload-progress` (deprecated), `realtime-event`, `error`, `provider-error` (SDK 2.0.42+)
 - `permissions-granted`, `permission-status`
 - `media-capture-status`, `participant-capture-status`, `compliance-message-status`, `shutdown`
 - `log`, `network-status`
@@ -320,6 +320,19 @@ const stopAudioListener = recallDesktop.addEventListener(
 ```
 
 This is a connection status, not a mute indicator. When computer audio is disconnected (for example, when joining audio by phone), the SDK continues capturing the local microphone. Delivery requires an installed plugin using SDK 2.0.34 or later; older SDKs do not emit this event.
+
+The `provider-error` event fires when the SDK gives up on an external provider for a recording, such as after repeated failed attempts to connect to the configured transcription provider:
+
+```typescript
+const stopProviderErrorListener = recallDesktop.addEventListener(
+  "provider-error",
+  ({ window, class: providerClass, provider, providerError }) => {
+    console.warn(window.id, providerClass, provider, providerError?.message);
+  }
+);
+```
+
+Meeting windows from SDK 2.0.42+ may also include `process_name`: the hosting app's macOS bundle ID or Windows executable name (including `.exe`). It is absent when unavailable or when recording the whole desktop.
 
 ### Configuration
 
@@ -347,6 +360,12 @@ This is a connection status, not a mute indicator. When computer audio is discon
   ```
 
   ## Changelog
+  - 1.3.20
+    - Updated `@recallai/desktop-sdk` from v2.0.41 to v2.0.42 in the plugin and client
+    - Added typed `provider-error` event support for transcription provider failures on macOS and Windows
+    - Added the `zoom-raw-media` permission (macOS, Zoom Desktop Raw Media beta) to `requestPermission()` typing, excluded from SDK startup permission options
+    - Added optional `process_name` to meeting window types and optional `error` to `permission-status` payloads
+    - Pulled in Zoom Raw Media improvements, Google Meet detection and capture fixes, Zoom full-screen and system audio fixes, Slack Huddle and Teams Raw Media fixes on macOS, and Teams Desktop compliance messaging fixes on Windows
   - 1.3.19
     - Updated `@recallai/desktop-sdk` from v2.0.40 to v2.0.41 in the plugin and client
     - Pulled in a macOS fix for raw media on Google Meet meetings joined via `meet.google.com/meet/<code>` URLs
