@@ -114,7 +114,9 @@ await recallDesktop.startRecording(windowId, uploadToken, {
 
 Omitting `disableRawMedia`, or setting it to `false`, leaves Raw Media available when the workspace, platform, and permissions support it. It does not force Raw Media to activate. Read `rawMedia` on the `recording-started` event to determine which capture mode actually started.
 
-Chat messages require an active Raw Media recording on a supported macOS Google Meet or Microsoft Teams setup:
+Google Meet in Chrome on Windows ARM64 and x64 supports beta Raw Media capture with SDK 2.0.43+ when the upstream opt-in feature flag is enabled. Your app must manage user approval for Chrome access.
+
+Chat messages require an active Raw Media recording on a supported macOS Google Meet or Microsoft Teams setup, or on Google Meet in Chrome on Windows ARM64 or x64 (SDK 2.0.43+, beta):
 
 ```typescript
 const result = await recallDesktop.sendChatMessage({
@@ -287,7 +289,7 @@ app.post("/webhooks/recall", (req, res) => {
 - `getStatus()` - Get plugin and SDK status
 - `getCapabilities()` - Get synchronous feature flags for the installed bridge
 - `startRecording(windowId, uploadToken, options?)` - Start recording; optionally pass `{ disableRawMedia: true }`
-- `sendChatMessage({ windowId, message, to?, pin? })` - Send a message through an active macOS Raw Media recording
+- `sendChatMessage({ windowId, message, to?, pin? })` - Send a message through a supported active Raw Media recording
 - `stopRecording(windowId)` - Stop recording
 - `pauseRecording(windowId)` - Pause recording
 - `resumeRecording(windowId)` - Resume recording
@@ -360,6 +362,11 @@ Meeting windows from SDK 2.0.42+ may also include `process_name`: the hosting ap
   ```
 
   ## Changelog
+  - 1.3.21
+    - Updated `@recallai/desktop-sdk` from v2.0.42 to v2.0.43 in the plugin and client
+    - Added beta Google Meet Raw Media support in Chrome on Windows ARM64 and x64, including chat messages during active Raw Media recordings; this requires the upstream opt-in feature flag and app-managed user approval for Chrome access
+    - Pulled in Slack Huddles support and lower meeting detection CPU usage on Windows, Zoom Raw Media improvements on macOS, and audio, video, and speaker timing fixes across platforms
+    - Refreshed SDK declarations and Raw Media documentation; no wrapper API changes were required
   - 1.3.20
     - Updated `@recallai/desktop-sdk` from v2.0.41 to v2.0.42 in the plugin and client
     - Added typed `provider-error` event support for transcription provider failures on macOS and Windows

@@ -208,7 +208,7 @@ export class RecallDesktopClient {
   }
 
   /**
-   * Send a chat message during a supported macOS Raw Media recording
+   * Send a chat message during a supported Raw Media recording
    * @param config Recording ID, message, and optional recipient and pin settings
    * @returns Promise resolving when the SDK accepts the message, not delivery confirmation
    */
