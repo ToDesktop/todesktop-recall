@@ -362,6 +362,11 @@ Meeting windows from SDK 2.0.42+ may also include `process_name`: the hosting ap
   ```
 
   ## Changelog
+  - 1.3.22
+    - Updated `@recallai/desktop-sdk` from v2.0.43 to v2.0.44 in the plugin and client
+    - Fixed `disableRawMedia` for Zoom on macOS and improved fallback to local capture when a Zoom Raw Media bot cannot start; improved Zoom screenshare capture
+    - Pulled in macOS meeting closure, browser automation permission status, and Teams participant name fixes, plus Windows Teams detection, title, and compliance messaging fixes
+    - SDK declarations and wrapper API are unchanged
   - 1.3.21
     - Updated `@recallai/desktop-sdk` from v2.0.42 to v2.0.43 in the plugin and client
     - Added beta Google Meet Raw Media support in Chrome on Windows ARM64 and x64, including chat messages during active Raw Media recordings; this requires the upstream opt-in feature flag and app-managed user approval for Chrome access
