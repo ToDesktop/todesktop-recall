@@ -114,9 +114,9 @@ await recallDesktop.startRecording(windowId, uploadToken, {
 
 Omitting `disableRawMedia`, or setting it to `false`, leaves Raw Media available when the workspace, platform, and permissions support it. It does not force Raw Media to activate. Read `rawMedia` on the `recording-started` event to determine which capture mode actually started.
 
-Google Meet in Chrome on Windows ARM64 and x64 supports beta Raw Media capture with SDK 2.0.43+ when the upstream opt-in feature flag is enabled. Your app must manage user approval for Chrome access.
+Google Meet on Windows ARM64 and x64 supports beta Raw Media capture in Chrome (SDK 2.0.43+) and Microsoft Edge (SDK 2.0.45+) when the upstream opt-in feature flag is enabled. Your app must manage user approval for browser access.
 
-Chat messages require an active Raw Media recording on a supported macOS Google Meet or Microsoft Teams setup, or on Google Meet in Chrome on Windows ARM64 or x64 (SDK 2.0.43+, beta):
+Chat messages require an active Raw Media recording on a supported macOS Google Meet or Microsoft Teams setup, or on Google Meet in Chrome (SDK 2.0.43+) or Microsoft Edge (SDK 2.0.45+) on Windows ARM64 or x64 (beta):
 
 ```typescript
 const result = await recallDesktop.sendChatMessage({
@@ -362,6 +362,12 @@ Meeting windows from SDK 2.0.42+ may also include `process_name`: the hosting ap
   ```
 
   ## Changelog
+  - 1.3.23
+    - Updated `@recallai/desktop-sdk` from v2.0.44 to v2.0.45 in the plugin and client
+    - Added Google Meet Raw Media support in Microsoft Edge on Windows, including chat messages, and Zoom Raw Media audio and video over TCP on macOS
+    - Corrected Raw Media participant `is_host` to identify the local user in Google Meet, Teams, and Zoom
+    - Pulled in the macOS 27.3 video capture crash fix, browser automation permission and capture recovery fixes, plus meeting detection, metadata, and compliance messaging improvements
+    - Prevented idle sleep during whole desktop recordings on Windows; refreshed SDK declarations and Raw Media documentation with no wrapper API changes
   - 1.3.22
     - Updated `@recallai/desktop-sdk` from v2.0.43 to v2.0.44 in the plugin and client
     - Fixed `disableRawMedia` for Zoom on macOS and improved fallback to local capture when a Zoom Raw Media bot cannot start; improved Zoom screenshare capture
