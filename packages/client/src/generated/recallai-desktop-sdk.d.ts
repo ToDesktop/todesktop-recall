@@ -404,9 +404,9 @@ export declare function dumpAllApplications(): Promise<any>;
  *
  * Supported on macOS and Windows. `windowId` must come from the SDK and `uploadToken` must come
  * from a newly created Desktop SDK Upload. On supported meeting platforms, including Google Meet
- * in Chrome on Windows ARM64 and x64, the SDK uses Raw Media when it is enabled and available; otherwise
+ * in Chrome or Edge on Windows ARM64 and x64, the SDK uses Raw Media when it is enabled and available; otherwise
  * it records locally. Resolve capture mode from `recording-started.rawMedia` rather than predicting
- * it from configuration. Integrators manage user approval for Chrome access in their application.
+ * it from configuration. Integrators manage user approval for browser access in their application.
  *
  * The returned promise only confirms that the start command was accepted. Listen for
  * `recording-started` to confirm that media capture began and `error` for asynchronous failures.
@@ -423,7 +423,7 @@ export declare function startRecording(config: StartRecordingConfig): Promise<nu
  * Stops the active recording for a meeting or prepared desktop-audio source.
  *
  * Supported for local recordings on macOS and Windows and for Raw Media recordings on macOS and
- * Windows Google Meet in Chrome on ARM64 and x64. The returned promise confirms command handling, not completion of
+ * Windows Google Meet in Chrome or Edge on ARM64 and x64. The returned promise confirms command handling, not completion of
  * cloud artifact processing. Listen for `recording-ended` for capture completion and use Desktop
  * SDK Upload webhooks for final upload status.
  *
@@ -436,7 +436,7 @@ export declare function stopRecording({ windowId }: StopRecordingConfig): Promis
  * Pauses media capture for an active recording without ending the recording.
  *
  * Supported for local recordings on macOS and Windows and for Raw Media recordings on macOS and
- * Windows Google Meet in Chrome on ARM64 and x64. Use
+ * Windows Google Meet in Chrome or Edge on ARM64 and x64. Use
  * the same `windowId` that was passed to {@link startRecording}. Call {@link resumeRecording} to
  * continue the recording.
  *
@@ -449,7 +449,7 @@ export declare function pauseRecording({ windowId }: PauseRecordingConfig): Prom
  * Resumes media capture for a paused recording.
  *
  * Supported for local recordings on macOS and Windows and for Raw Media recordings on macOS and
- * Windows Google Meet in Chrome on ARM64 and x64. Use
+ * Windows Google Meet in Chrome or Edge on ARM64 and x64. Use
  * the same `windowId` that was passed to {@link startRecording}.
  *
  * @param config Paused recording ID.
@@ -461,7 +461,7 @@ export declare function resumeRecording({ windowId }: ResumeRecordingConfig): Pr
  * Sends a chat message through an active Desktop SDK Raw Media recording.
  *
  * Supported for Microsoft Teams Desktop and supported Chromium-based Google Meet browsers on
- * macOS, and for Google Meet in Chrome on Windows ARM64 and x64, when `recording-started.rawMedia` is `true`.
+ * macOS, and for Google Meet in Chrome or Edge on Windows ARM64 and x64, when `recording-started.rawMedia` is `true`.
  * This method is not available for local recordings. The returned promise confirms that the
  * message was accepted and queued for the Raw Media connection; it does not confirm that the
  * meeting platform displayed it.
