@@ -322,6 +322,8 @@ export class RecallDesktopClient {
 
   /**
    * Request a specific permission from the user
+   * On Windows, request browser-automation from a user action before a meeting and
+   * again after each SDK process start, including automatic restarts.
    * @param permission The permission to request
    * @returns Promise resolving to permission request result
    * @throws Error if plugin is not available

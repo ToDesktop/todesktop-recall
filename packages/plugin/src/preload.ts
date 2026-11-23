@@ -157,6 +157,8 @@ export async function setDesktopAudioDevice(
 
 /**
  * Request a specific permission from the user
+ * On Windows, request browser-automation from a user action before a meeting and
+ * again after each SDK process start, including automatic restarts.
  * @param permission The permission to request
  * @returns Promise resolving to permission request result
  */
@@ -210,7 +212,7 @@ export function addEventListener(eventType: RecallSdkEventType, callback: (data:
  * @returns Plugin version string
  */
 export function getVersion(): string {
-  return '1.3.23';
+  return '1.3.24';
 }
 
 /**
