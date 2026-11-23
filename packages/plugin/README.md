@@ -114,9 +114,9 @@ await recallDesktop.startRecording(windowId, uploadToken, {
 
 Omitting `disableRawMedia`, or setting it to `false`, leaves Raw Media available when the workspace, platform, and permissions support it. It does not force Raw Media to activate. Read `rawMedia` on the `recording-started` event to determine which capture mode actually started.
 
-Google Meet on Windows ARM64 and x64 supports beta Raw Media capture in Chrome (SDK 2.0.43+) and Microsoft Edge (SDK 2.0.45+) when the upstream opt-in feature flag is enabled. Your app must manage user approval for browser access.
+Google Meet on Windows ARM64 and x64 has full Raw Media support in Chrome and Microsoft Edge with SDK 2.0.46+. After initializing the SDK, your app must call `requestPermission("browser-automation")` from an explicit user action before the meeting. This permission resets whenever the SDK process exits, including automatic restarts after an unexpected exit, so request it again after each start. Earlier SDK versions provided beta support in Chrome (2.0.43+) and Edge (2.0.45+) with an upstream opt-in feature flag.
 
-Chat messages require an active Raw Media recording on a supported macOS Google Meet or Microsoft Teams setup, or on Google Meet in Chrome (SDK 2.0.43+) or Microsoft Edge (SDK 2.0.45+) on Windows ARM64 or x64 (beta):
+Chat messages require an active Raw Media recording on a supported macOS Google Meet or Microsoft Teams setup, or on Google Meet in Chrome or Microsoft Edge on Windows ARM64 or x64 (full support with SDK 2.0.46+):
 
 ```typescript
 const result = await recallDesktop.sendChatMessage({
@@ -204,6 +204,8 @@ removePermissionListener();
 ```
 
 You can also request `teams-automation`, `browser-automation`, and `zoom-raw-media` (macOS, SDK 2.0.42+; Zoom may restart) through `requestPermission()`. Request them only from an explicit user interaction. These permissions cannot be requested through the SDK's `acquirePermissionsOnStartup` option and are not included in the plugin's startup permission requests.
+
+On Windows with SDK 2.0.46+, `browser-automation` must also be requested to enable Google Meet Raw Media, even though Windows reports permission requests as granted. Request it from an explicit user interaction before a meeting after each SDK process start, including automatic restarts. Do not treat this permission as permanently granted or add it to startup permission requests.
 
 ## Backend Integration
 
@@ -362,6 +364,12 @@ Meeting windows from SDK 2.0.42+ may also include `process_name`: the hosting ap
   ```
 
   ## Changelog
+  - 1.3.24
+    - Updated `@recallai/desktop-sdk` from v2.0.45 to v2.0.46 in the plugin and client
+    - Documented full Google Meet Raw Media support on Windows and the requirement to request `browser-automation` after each SDK process start
+    - Pulled in removal of macOS Zoom Raw Media keychain prompts, Google Meet waiting-room and tab-share fixes, Zoom compliance messaging improvements, and macOS audio capture recovery and Teams Web detection fixes
+    - Native SDK downloads are now verified against SHA-256 checksums before extraction during npm installation
+    - Refreshed SDK declarations and permission documentation; no wrapper API or type signature changes were required
   - 1.3.23
     - Updated `@recallai/desktop-sdk` from v2.0.44 to v2.0.45 in the plugin and client
     - Added Google Meet Raw Media support in Microsoft Edge on Windows, including chat messages, and Zoom Raw Media audio and video over TCP on macOS

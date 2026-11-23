@@ -58,8 +58,10 @@ export type EventTypeToPayloadMap = {
 /**
  * A permission understood by {@link requestPermission}.
  *
- * These permissions are only required on macOS. Windows reports permission requests as granted
- * because it does not require the corresponding macOS consent flows.
+ * macOS requires the corresponding system consent flows. Windows reports permission requests as granted,
+ * but `browser-automation` must still be requested to enable Google Meet Raw Media. On Windows it resets
+ * whenever the SDK process exits, including automatic restarts after an unexpected exit, so request it
+ * again after each start.
  *
  * `teams-automation`, `browser-automation`, and `zoom-raw-media` enable Raw Media and must be requested from an
  * explicit user action before a meeting. They cannot be included in
@@ -81,7 +83,10 @@ export type Permission =
  | 'full-disk-access'
 /** Prepare Microsoft Teams Desktop for Raw Media capture. macOS only. */
  | 'teams-automation'
-/** Prepare the supported default Chromium browser for Google Meet Raw Media. macOS only. */
+/**
+ * Enable Google Meet Raw Media. On macOS, also prepare the supported default Chromium browser.
+ * On Windows, resets whenever the SDK process exits; request it again after each start.
+ */
  | 'browser-automation'
 /** Configure Zoom for Raw Media. macOS only. Zoom may restart. */
  | 'zoom-raw-media';
@@ -129,7 +134,7 @@ export interface StartRecordingConfig {
     /** Short-lived upload token returned by the Create Desktop SDK Upload endpoint. */
     uploadToken: string;
     /**
-     * Disables Raw Media when it is enabled and available in your Recall.ai workspace.
+     * Disables Raw Media when it is available for the meeting.
      * Defaults to false.
      *
      * @see https://docs.recall.ai/docs/desktop-recording-sdk-raw-media
@@ -528,7 +533,8 @@ export declare function setDesktopAudioDevice(id: string | null, dir: AudioDevic
  *
  * macOS may display a system prompt or open the relevant System Settings pane. Observe
  * `permission-status` for the resulting state; promise resolution does not by itself mean the user
- * granted access. Windows does not require these macOS permissions and reports requests as granted.
+ * granted access. Windows does not require these macOS permissions and reports requests as granted, except that
+ * `browser-automation` enables Google Meet Raw Media only until the SDK process exits.
  *
  * Request `teams-automation`, `browser-automation`, and `zoom-raw-media` only from an explicit user interaction and
  * before a meeting starts. Automation setup may restart Teams or the supported default browser and
